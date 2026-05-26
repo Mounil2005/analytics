@@ -10,19 +10,28 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 
+import pandas as pd
+
 from hiero_analytics.analysis.dataframe_utils import issues_to_dataframe
 from hiero_analytics.config.charts import DIFFICULTY_COLORS
 from hiero_analytics.config.paths import ORG, ensure_org_dirs
 from hiero_analytics.data_sources.github_client import GitHubClient
-from hiero_analytics.data_sources.github_ingest import fetch_org_issues_graphql
+from hiero_analytics.data_sources.github_ingest import (
+    fetch_org_issues_graphql,
+    fetch_repo_issue_events_for_issues_since,
+)
+from hiero_analytics.data_sources.models import IssueRecord, IssueTimelineEventRecord
 from hiero_analytics.domain.labels import (
     DIFFICULTY_LEVELS,
     DIFFICULTY_ORDER,
     UNKNOWN_DIFFICULTY,
+    LabelSpec,
 )
 from hiero_analytics.export.save import save_dataframe
 from hiero_analytics.plotting.bars import plot_stacked_bar
 from hiero_analytics.plotting.pie import plot_pie
+
+TIMELINE_MAX_WORKERS = 3
 
 
 def assign_difficulty(labels, specs):
@@ -31,6 +40,92 @@ def assign_difficulty(labels, specs):
         if spec.matches(labels):
             return spec.name
     return UNKNOWN_DIFFICULTY
+
+
+_TIMELINE_EVENT_ORDER = {
+    "unlabeled": 0,
+    "labeled": 1,
+    "closed": 2,
+    "reopened": 3,
+}
+
+
+def _normalize_datetime(value: datetime | None) -> datetime | None:
+    """Return a timezone-aware UTC datetime for stable comparisons."""
+    if value is None:
+        return None
+
+    if value.tzinfo is None:
+        return value.replace(tzinfo=UTC)
+
+    return value.astimezone(UTC)
+
+
+def _issues_labeled_since(
+    issues: list[IssueRecord],
+    timeline_events: list[IssueTimelineEventRecord],
+    cutoff: datetime,
+    difficulty_specs: tuple[LabelSpec, ...],
+) -> set[tuple[str, int]]:
+    """Return (repo, number) pairs for issues with an active difficulty label applied since cutoff.
+
+    An issue qualifies when a difficulty label was added within the window
+    and has not been subsequently removed.  Issues created after the cutoff
+    that already carry a difficulty label are included as a fallback for
+    cases where the label was applied at creation time (e.g. via an issue
+    template) and no separate ``labeled`` event is recorded.
+    """
+    difficulty_label_names: set[str] = set()
+    for spec in difficulty_specs:
+        difficulty_label_names |= spec.labels
+
+    # Precompute the set of issue keys we care about so we can skip
+    # repository-wide events for issues outside the fetched set (e.g.
+    # closed issues or issues not matching the query).
+    issue_key_set = {(issue.repo, issue.number) for issue in issues}
+
+    # Sort events chronologically with a stable tie-breaker to handle
+    # unordered results from concurrent per-repo REST API fetches.
+    sorted_events = sorted(
+        timeline_events,
+        key=lambda event: (
+            _normalize_datetime(event.occurred_at),
+            _TIMELINE_EVENT_ORDER.get(event.event_type, 99),
+        ),
+    )
+
+    # Track active difficulty labels per issue: add on "labeled", remove on
+    # "unlabeled".  Keyed by (repo, issue_number, label) so that removing
+    # one difficulty label does not erase the record of a different one.
+    active_labels: set[tuple[str, int, str]] = set()
+    for event in sorted_events:
+        if (event.repo, event.issue_number) not in issue_key_set:
+            continue
+        if event.label is None or event.label not in difficulty_label_names:
+            continue
+
+        label_key = (event.repo, event.issue_number, event.label)
+        if event.event_type == "labeled":
+            active_labels.add(label_key)
+        elif event.event_type == "unlabeled":
+            active_labels.discard(label_key)
+
+    # Derive the set of qualifying issue keys from active labels.
+    labeled: set[tuple[str, int]] = {(repo, number) for repo, number, _label in active_labels}
+
+    # Fallback: include issues created after the cutoff whose current labels
+    # match a difficulty spec but lack a corresponding timeline event.
+    for issue in issues:
+        key = (issue.repo, issue.number)
+        if key in labeled:
+            continue
+        if issue.created_at >= cutoff:
+            for spec in difficulty_specs:
+                if spec.matches(set(issue.labels)):
+                    labeled.add(key)
+                    break
+
+    return labeled
 
 
 def main() -> None:
@@ -48,7 +143,25 @@ def main() -> None:
 
     cutoff = datetime.now(UTC) - timedelta(days=30)
 
-    df = df[(df["state"] == "open") & (df["created_at"] >= cutoff)].copy()
+    # Fetch timeline events to determine when difficulty labels were applied.
+    timeline_events = fetch_repo_issue_events_for_issues_since(
+        client,
+        issues,
+        since=cutoff,
+        max_workers=TIMELINE_MAX_WORKERS,
+    )
+    print(f"Fetched {len(timeline_events)} timeline events")
+
+    # Identify issues that received a difficulty label within the window.
+    labeled_issues = _issues_labeled_since(
+        issues,
+        timeline_events,
+        cutoff,
+        DIFFICULTY_LEVELS,
+    )
+
+    issue_keys = pd.MultiIndex.from_arrays([df["repo"], df["number"]])
+    df = df[(df["state"] == "open") & issue_keys.isin(labeled_issues)].copy()
 
     # Remove org prefix from repo name
     df["repo"] = df["repo"].str.split("/").str[-1]
@@ -72,12 +185,12 @@ def main() -> None:
     pie_variants = [
         (
             difficulty_counts,
-            "Open Issues (Created Last 30 Days) by Difficulty Distribution (Including Unknown)",
+            "Open Issues (Labeled Last 30 Days) by Difficulty Distribution (Including Unknown)",
             "difficulty_distribution_with_unknown_30_days.png",
         ),
         (
             difficulty_counts[difficulty_counts["difficulty"] != UNKNOWN_DIFFICULTY],
-            "Open Issues (Created Last 30 Days) by Difficulty Distribution (Excluding Unknown)",
+            "Open Issues (Labeled Last 30 Days) by Difficulty Distribution (Excluding Unknown)",
             "difficulty_distribution_without_unknown_30_days.png",
         ),
     ]
@@ -122,7 +235,7 @@ def main() -> None:
         x_col="repo",
         stack_cols=difficulty_cols,
         labels=difficulty_cols,
-        title="Open Issues (Created Last 30 Days) by Difficulty Distribution in a Repository",
+        title="Open Issues (Labeled Last 30 Days) by Difficulty Distribution in a Repository",
         output_path=org_charts_dir / "difficulty_by_repo_30_days.png",
         colors=DIFFICULTY_COLORS,
         rotate_x=45,
