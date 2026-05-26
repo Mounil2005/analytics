@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import hiero_analytics.plotting.pie as pie_module
 from hiero_analytics.plotting.bars import _compute_annotation_padding, _round_bar_patches, plot_bar
 from hiero_analytics.plotting.base import create_figure, style_axes
-from hiero_analytics.plotting.lines import plot_multiline, plot_stacked_area
+from hiero_analytics.plotting.lines import plot_date_line, plot_multiline, plot_stacked_area
 from hiero_analytics.plotting.pie import plot_pie
 
 
@@ -127,6 +127,109 @@ def test_plotters_write_chart_files(tmp_path):
     assert line_output.exists() and line_output.stat().st_size > 0
     assert pie_output.exists() and pie_output.stat().st_size > 0
     assert area_output.exists() and area_output.stat().st_size > 0
+
+
+def test_plot_date_line_writes_chart_with_datetime_x_axis(tmp_path):
+    """``plot_date_line`` should preserve datetime axes (unlike ``plot_line``)."""
+    monthly_df = pd.DataFrame(
+        {
+            "month": pd.to_datetime(
+                ["2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01"]
+            ),
+            "messages": [12, 30, 22, 41, 75],
+        }
+    )
+    output = tmp_path / "monthly_line.png"
+
+    plot_date_line(
+        monthly_df,
+        x_col="month",
+        y_col="messages",
+        title="Monthly traffic",
+        output_path=output,
+    )
+
+    assert output.exists() and output.stat().st_size > 0
+
+
+def test_plot_date_line_handles_non_default_index(tmp_path):
+    """``idxmax`` returns a label, not an int — non-default indexes must work."""
+    monthly_df = pd.DataFrame(
+        {
+            "month": pd.to_datetime(["2025-09-01", "2025-10-01", "2025-11-01"]),
+            "messages": [5, 30, 10],
+        },
+        index=["a", "b", "c"],  # Non-RangeIndex would break an ``int(idxmax())`` cast.
+    )
+    output = tmp_path / "non_default_index.png"
+
+    plot_date_line(
+        monthly_df,
+        x_col="month",
+        y_col="messages",
+        title="Non-default index",
+        output_path=output,
+    )
+
+    assert output.exists() and output.stat().st_size > 0
+
+
+def test_plot_date_line_handles_all_zero_series(tmp_path, recwarn):
+    """All-zero y values must not trigger matplotlib's singular-limits warning."""
+    monthly_df = pd.DataFrame(
+        {
+            "month": pd.to_datetime(["2025-09-01", "2025-10-01"]),
+            "messages": [0, 0],
+        }
+    )
+    output = tmp_path / "all_zero.png"
+
+    plot_date_line(
+        monthly_df,
+        x_col="month",
+        y_col="messages",
+        title="All-zero series",
+        output_path=output,
+    )
+
+    assert output.exists() and output.stat().st_size > 0
+    assert not any("singular" in str(w.message).lower() for w in recwarn)
+
+
+def test_plot_date_line_raises_on_unparseable_dates(tmp_path):
+    """Garbage date strings should fail loudly rather than silently produce a blank chart."""
+    bad_df = pd.DataFrame({"month": ["not-a-date", "also-bad"], "messages": [1, 2]})
+
+    with pytest.raises(ValueError, match="datetime"):
+        plot_date_line(
+            bad_df,
+            x_col="month",
+            y_col="messages",
+            title="Broken dates",
+            output_path=tmp_path / "broken.png",
+        )
+
+
+def test_plot_date_line_respects_annotation_toggle(tmp_path):
+    """Disabling annotations should still produce a chart (no crashes)."""
+    monthly_df = pd.DataFrame(
+        {
+            "month": pd.to_datetime(["2025-09-01", "2025-10-01"]),
+            "messages": [10, 20],
+        }
+    )
+    output = tmp_path / "no_annotations.png"
+
+    plot_date_line(
+        monthly_df,
+        x_col="month",
+        y_col="messages",
+        title="No callouts",
+        output_path=output,
+        annotate_peak_and_latest=False,
+    )
+
+    assert output.exists() and output.stat().st_size > 0
 
 
 def test_plot_pie_rejects_non_positive_totals(tmp_path):

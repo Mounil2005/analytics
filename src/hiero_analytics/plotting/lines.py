@@ -9,10 +9,31 @@ import matplotlib.ticker as ticker
 import pandas as pd
 from matplotlib.patches import Patch
 
-from hiero_analytics.config.charts import FIGURE_BACKGROUND_COLOR, PLOT_BACKGROUND_COLOR, PRIMARY_PALETTE
+from hiero_analytics.config.charts import (
+    ANNOTATION_FONT_SIZE,
+    ENDPOINT_LABEL_BOX_STYLE,
+    FIGURE_BACKGROUND_COLOR,
+    FONT_WEIGHT_SEMIBOLD,
+    LEGEND_EDGE_COLOR,
+    LINE_FILL_ALPHA,
+    LINE_MARKER_EDGE_WIDTH,
+    LINE_MARKER_SIZE,
+    LINE_WIDTH,
+    PLOT_BACKGROUND_COLOR,
+    PRIMARY_PALETTE,
+    TITLE_COLOR,
+)
 
 from .base import create_figure, finalize_chart, prepare_dataframe
 from .primitives import annotate_endpoint_badge, build_palette, format_chart_value, is_numeric_or_datetime
+
+# Headroom multiplier on the y-axis so badge annotations have room above the
+# peak marker without overlapping the chart frame.
+DATE_LINE_Y_HEADROOM = 1.25
+DATE_LINE_X_MARGIN = 0.02
+DATE_LINE_Y_MARGIN = 0.18
+DATE_LINE_LABEL_OFFSET_Y = 14
+DATE_LINE_BBOX_LINEWIDTH = 0.9
 
 
 def plot_line(
@@ -41,10 +62,10 @@ def plot_line(
         data[y_col],
         marker="o",
         color=PRIMARY_PALETTE[2],
-        linewidth=2.6,
-        markersize=7,
+        linewidth=LINE_WIDTH,
+        markersize=LINE_MARKER_SIZE,
         markeredgecolor=FIGURE_BACKGROUND_COLOR,
-        markeredgewidth=2,
+        markeredgewidth=LINE_MARKER_EDGE_WIDTH,
         solid_capstyle="round",
         zorder=3,
     )
@@ -53,7 +74,7 @@ def plot_line(
         data[y_col],
         0,
         color=PRIMARY_PALETTE[2],
-        alpha=0.08,
+        alpha=LINE_FILL_ALPHA,
         zorder=2,
     )
     annotate_endpoint_badge(
@@ -69,6 +90,95 @@ def plot_line(
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     ax.set_xlim(float(data[x_col].min()) - 0.15, float(data[x_col].max()) + 0.45)
     ax.margins(x=0.03, y=0.16)
+
+    finalize_chart(
+        fig=fig,
+        ax=ax,
+        title=title,
+        xlabel=x_col,
+        ylabel=y_col,
+        output_path=output_path,
+        rotate_x=rotate_x,
+        grid_axis="y",
+    )
+
+
+def plot_date_line(
+    df: pd.DataFrame,
+    x_col: str,
+    y_col: str,
+    title: str,
+    output_path: Path,
+    *,
+    month_interval: int = 2,
+    date_format: str = "%b %Y",
+    annotate_peak_and_latest: bool = True,
+    rotate_x: int = 30,
+) -> None:
+    """Plot a time-series line chart with a datetime x-axis.
+
+    Unlike ``plot_line`` (numeric x-axis only), this helper preserves the
+    chronological scale via matplotlib's date locators and adds optional
+    callout badges on the peak and latest points so growth stories read
+    at a glance.
+    """
+    df = prepare_dataframe(df, x_col, y_col)
+    data = df.sort_values(x_col).copy()
+    data[x_col] = pd.to_datetime(data[x_col], errors="coerce")
+    data = data.dropna(subset=[x_col])
+
+    if data.empty:
+        raise ValueError("No valid datetime x-axis values")
+
+    fig, ax = create_figure()
+    color = PRIMARY_PALETTE[2]
+
+    ax.plot(
+        data[x_col],
+        data[y_col],
+        marker="o",
+        color=color,
+        linewidth=LINE_WIDTH,
+        markersize=LINE_MARKER_SIZE,
+        markeredgecolor=FIGURE_BACKGROUND_COLOR,
+        markeredgewidth=LINE_MARKER_EDGE_WIDTH,
+        solid_capstyle="round",
+        zorder=3,
+    )
+    ax.fill_between(data[x_col], data[y_col], 0, color=color, alpha=LINE_FILL_ALPHA, zorder=2)
+
+    if annotate_peak_and_latest:
+        peak_idx = data[y_col].idxmax()
+        latest_idx = data.index[-1]
+        # Use a set so peak == latest only renders one badge.
+        for idx in {peak_idx, latest_idx}:
+            row = data.loc[idx]
+            label_text = f"{row[x_col]:{date_format}}: {int(row[y_col])}"
+            ax.annotate(
+                label_text,
+                xy=(row[x_col], row[y_col]),
+                xytext=(0, DATE_LINE_LABEL_OFFSET_Y),
+                textcoords="offset points",
+                ha="center",
+                va="bottom",
+                fontsize=ANNOTATION_FONT_SIZE,
+                color=TITLE_COLOR,
+                fontweight=FONT_WEIGHT_SEMIBOLD,
+                bbox={
+                    "boxstyle": ENDPOINT_LABEL_BOX_STYLE,
+                    "facecolor": FIGURE_BACKGROUND_COLOR,
+                    "edgecolor": LEGEND_EDGE_COLOR,
+                    "linewidth": DATE_LINE_BBOX_LINEWIDTH,
+                },
+                zorder=4,
+            )
+
+    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=month_interval))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter(date_format))
+    ax.margins(x=DATE_LINE_X_MARGIN, y=DATE_LINE_Y_MARGIN)
+    # Guard against singular ylim (and matplotlib's warning) on all-zero series.
+    max_y = float(data[y_col].max())
+    ax.set_ylim(0, max_y * DATE_LINE_Y_HEADROOM if max_y > 0 else 1.0)
 
     finalize_chart(
         fig=fig,
@@ -151,9 +261,9 @@ def plot_multiline(
             label=str(column),
             color=color,
             linewidth=3 if is_total else 2.4,
-            markersize=7,
+            markersize=LINE_MARKER_SIZE,
             markeredgecolor=FIGURE_BACKGROUND_COLOR,
-            markeredgewidth=2,
+            markeredgewidth=LINE_MARKER_EDGE_WIDTH,
             solid_capstyle="round",
             zorder=3,
         )
@@ -165,7 +275,7 @@ def plot_multiline(
                 series,
                 0,
                 color=color,
-                alpha=0.08,
+                alpha=LINE_FILL_ALPHA,
                 zorder=2,
             )
         annotate_endpoint_badge(
