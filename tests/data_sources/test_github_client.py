@@ -47,7 +47,7 @@ def test_client_without_token(monkeypatch):
 # ---------------------------------------------------------
 
 
-def test_get_success(monkeypatch, mock_sleep):  # noqa: ARG001
+def test_get_success(monkeypatch, mock_sleep):
     """Verify a successful GET request returns parsed JSON and increments request counter."""
     mock_response = Mock()
     mock_response.headers = {
@@ -73,7 +73,7 @@ def test_get_success(monkeypatch, mock_sleep):  # noqa: ARG001
     assert client.requests_made == 1
 
 
-def test_no_retry_on_401(monkeypatch, mock_sleep):  # noqa: ARG001
+def test_no_retry_on_401(monkeypatch, mock_sleep):
     """Verify the client fails immediately on 401 Unauthorized."""
     client = github_client.GitHubClient()
 
@@ -98,7 +98,7 @@ def test_no_retry_on_401(monkeypatch, mock_sleep):  # noqa: ARG001
 # ---------------------------------------------------------
 
 
-def test_get_rate_limit_retry(monkeypatch, mock_sleep):  # noqa: ARG001
+def test_get_rate_limit_retry(monkeypatch, mock_sleep):
     """Verify the client retries after a 403 rate-limit response."""
     first = Mock()
     first.headers = {
@@ -133,7 +133,7 @@ def test_get_rate_limit_retry(monkeypatch, mock_sleep):  # noqa: ARG001
     assert result == {"retried": True}
 
 
-def test_retries_on_502_and_succeeds(monkeypatch, mock_sleep):  # noqa: ARG001
+def test_retries_on_502_and_succeeds(monkeypatch, mock_sleep):
     """Verify the client recovers if a 502 is followed by a 200."""
     client = github_client.GitHubClient()
 
@@ -157,7 +157,7 @@ def test_retries_on_502_and_succeeds(monkeypatch, mock_sleep):  # noqa: ARG001
     assert request_mock.call_count == 2
 
 
-def test_502_prioritized_over_rate_limit(monkeypatch, mock_sleep):  # noqa: ARG001
+def test_502_prioritized_over_rate_limit(monkeypatch, mock_sleep):
     """Verify the 502 retry path takes priority over rate-limit handling."""
     client = github_client.GitHubClient()
 
@@ -244,7 +244,7 @@ def test_graphql_request(monkeypatch):
     assert kwargs["json"]["variables"] == variables
 
 
-def test_graphql_fresh_retry_limit_exceeded(monkeypatch, mock_sleep):  # noqa: ARG001
+def test_graphql_fresh_retry_limit_exceeded(monkeypatch, mock_sleep):
     """Verify a RuntimeError is raised when GraphQL rate-limit retries are exhausted."""
     rate_limited = Mock()
     rate_limited.raise_for_status = Mock()

@@ -30,7 +30,7 @@ def _to_iso(value: datetime) -> str:
     return value.replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-def test_fetch_repo_contributor_activity_graphql(mock_client, bypass_pagination):  # noqa: ARG001
+def test_fetch_repo_contributor_activity_graphql(mock_client, bypass_pagination):
     """Test fetching repository contributor activity."""
     now = datetime.now(UTC)
     issue_created_at = _to_iso(now - timedelta(days=6))
@@ -198,7 +198,7 @@ def test_fetch_repo_pull_request_activity_graphql_stops_after_older_pr(mock_clie
     assert mock_client.graphql.call_count == 1
 
 
-def test_lookback_days_none_includes_old_activity(mock_client, bypass_pagination):  # noqa: ARG001
+def test_lookback_days_none_includes_old_activity(mock_client, bypass_pagination):
     """When lookback_days is None all historical records should be returned."""
     old_date = _to_iso(datetime(2023, 1, 15, tzinfo=UTC))
 

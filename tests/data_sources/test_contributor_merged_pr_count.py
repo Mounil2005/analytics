@@ -131,7 +131,7 @@ def test_fetch_repo_contributor_merged_pr_count_graphql_zero(mock_client):
 # ---------------------------------------------------------
 
 
-def test_fetch_org_contributor_merged_pr_count_graphql(mock_client, bypass_pagination):  # noqa: ARG001
+def test_fetch_org_contributor_merged_pr_count_graphql(mock_client, bypass_pagination):
     """Test fetching merged PR counts across all repositories in an org."""
     # Mock for fetching repos
     mock_client.graphql.side_effect = [

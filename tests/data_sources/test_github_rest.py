@@ -32,7 +32,7 @@ def bypass_pagination(monkeypatch):
 # --------------------------------------------------------
 
 
-def test_search_issues_returns_items(mock_client, bypass_pagination):  # noqa: ARG001
+def test_search_issues_returns_items(mock_client, bypass_pagination):
     """Test searching issues returns correctly mapped items."""
     mock_client.get.return_value = {
         "items": [
@@ -52,7 +52,7 @@ def test_search_issues_returns_items(mock_client, bypass_pagination):  # noqa: A
 # --------------------------------------------------------
 
 
-def test_search_issues_calls_client_with_correct_params(mock_client, bypass_pagination):  # noqa: ARG001
+def test_search_issues_calls_client_with_correct_params(mock_client, bypass_pagination):
     """Test searching issues calls client with proper request parameters."""
     mock_client.get.return_value = {"items": []}
 
@@ -76,7 +76,7 @@ def test_search_issues_calls_client_with_correct_params(mock_client, bypass_pagi
 # --------------------------------------------------------
 
 
-def test_search_issues_filters_non_dict_items(mock_client, bypass_pagination):  # noqa: ARG001
+def test_search_issues_filters_non_dict_items(mock_client, bypass_pagination):
     """Test searching issues filters out invalid non-dictionary items."""
     mock_client.get.return_value = {
         "items": [
@@ -98,7 +98,7 @@ def test_search_issues_filters_non_dict_items(mock_client, bypass_pagination):  
 # --------------------------------------------------------
 
 
-def test_search_issues_handles_missing_items(mock_client, bypass_pagination):  # noqa: ARG001
+def test_search_issues_handles_missing_items(mock_client, bypass_pagination):
     """Test searching issues gracefully handles missing items key in response."""
     mock_client.get.return_value = {}
 

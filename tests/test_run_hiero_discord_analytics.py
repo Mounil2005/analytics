@@ -54,7 +54,7 @@ def monthly_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 # --------------------------------------------------------------------------- #
 
 
-def test_load_channels_df_reads_csv_and_derives_label_and_category(channels_csv: Path) -> None:  # noqa: ARG001
+def test_load_channels_df_reads_csv_and_derives_label_and_category(channels_csv: Path) -> None:
     """Test that load_channels_df reads the CSV and derives label and category columns."""
     df = runner.load_channels_df()
 
@@ -111,7 +111,7 @@ def test_load_channels_df_raises_when_missing(tmp_path: Path, monkeypatch: pytes
         runner.load_channels_df()
 
 
-def test_load_monthly_df_parses_and_sorts(monthly_csv: Path) -> None:  # noqa: ARG001
+def test_load_monthly_df_parses_and_sorts(monthly_csv: Path) -> None:
     """Test that load_monthly_df parses datetimes and returns rows sorted ascending."""
     df = runner.load_monthly_df()
 
@@ -146,7 +146,7 @@ def test_resolve_path_falls_back_to_default(tmp_path: Path, monkeypatch: pytest.
 # --------------------------------------------------------------------------- #
 
 
-def test_plot_recent_activity_30d_writes_png(tmp_path: Path, channels_csv: Path) -> None:  # noqa: ARG001
+def test_plot_recent_activity_30d_writes_png(tmp_path: Path, channels_csv: Path) -> None:
     """Test that plot_recent_activity_30d writes a PNG file."""
     output = tmp_path / "recent.png"
     runner.plot_recent_activity_30d(runner.load_channels_df(), output)
@@ -154,7 +154,7 @@ def test_plot_recent_activity_30d_writes_png(tmp_path: Path, channels_csv: Path)
     assert output.exists() and output.stat().st_size > 0
 
 
-def test_plot_recent_activity_30d_filters_zero_d30_and_caps_top_n(channels_csv: Path) -> None:  # noqa: ARG001
+def test_plot_recent_activity_30d_filters_zero_d30_and_caps_top_n(channels_csv: Path) -> None:
     """The chart must drop zero-message channels and respect ``top_n``."""
     with patch.object(runner, "plot_bar") as mock_plot_bar:
         runner.plot_recent_activity_30d(runner.load_channels_df(), Path("/unused.png"), top_n=2)
@@ -170,7 +170,7 @@ def test_plot_recent_activity_30d_filters_zero_d30_and_caps_top_n(channels_csv: 
     assert "#hiero-hips" not in passed_df["channel_label"].tolist()
 
 
-def test_plot_category_breakdown_writes_png(tmp_path: Path, channels_csv: Path) -> None:  # noqa: ARG001
+def test_plot_category_breakdown_writes_png(tmp_path: Path, channels_csv: Path) -> None:
     """Test that plot_category_breakdown writes a PNG file."""
     output = tmp_path / "categories.png"
     runner.plot_category_breakdown(runner.load_channels_df(), output)
@@ -178,7 +178,7 @@ def test_plot_category_breakdown_writes_png(tmp_path: Path, channels_csv: Path) 
     assert output.exists() and output.stat().st_size > 0
 
 
-def test_plot_monthly_traffic_writes_png(tmp_path: Path, monthly_csv: Path) -> None:  # noqa: ARG001
+def test_plot_monthly_traffic_writes_png(tmp_path: Path, monthly_csv: Path) -> None:
     """Test that plot_monthly_traffic writes a PNG file."""
     output = tmp_path / "monthly.png"
     runner.plot_monthly_traffic(runner.load_monthly_df(), output)
@@ -193,8 +193,8 @@ def test_plot_monthly_traffic_writes_png(tmp_path: Path, monthly_csv: Path) -> N
 
 def test_main_writes_three_charts(
     tmp_path: Path,
-    channels_csv: Path,  # noqa: ARG001
-    monthly_csv: Path,  # noqa: ARG001
+    channels_csv: Path,
+    monthly_csv: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """``main()`` must produce all three expected PNGs in the org charts dir."""

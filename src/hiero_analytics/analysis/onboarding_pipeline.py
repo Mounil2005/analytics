@@ -16,16 +16,11 @@ def build_gfi_pipeline(
     Candidates (GFIC) into a single table so the two stages of the onboarding
     funnel can be compared over time.
 
-    Parameters
-    ----------
-    gfi_yearly
-        DataFrame with columns ["year", "count"] for GFI issues.
-    gfic_yearly
-        DataFrame with columns ["year", "count"] for GFIC issues.
+    Args:
+        gfi_yearly: DataFrame with columns ["year", "count"] for GFI issues.
+        gfic_yearly: DataFrame with columns ["year", "count"] for GFIC issues.
 
     Returns:
-    -------
-    pd.DataFrame
         DataFrame with columns ["year", "gfi", "gfic"] sorted by year.
     """
     return (
@@ -51,16 +46,11 @@ def build_onboarding_repo_pipeline(
     Combines total counts of GFI and GFIC issues per repository to compare
     how different repositories contribute to the onboarding pipeline.
 
-    Parameters
-    ----------
-    gfi_total_by_repo
-        DataFrame with columns ["repo", "count"] for GFI issues.
-    gfic_total_by_repo
-        DataFrame with columns ["repo", "count"] for GFIC issues.
+    Args:
+        gfi_total_by_repo: DataFrame with columns ["repo", "count"] for GFI issues.
+        gfic_total_by_repo: DataFrame with columns ["repo", "count"] for GFIC issues.
 
     Returns:
-    -------
-    pd.DataFrame
         DataFrame with columns ["repo", "gfi", "gfic"], sorted by GFI count.
     """
     gfi = gfi_total_by_repo.rename(columns={"count": "gfi"})

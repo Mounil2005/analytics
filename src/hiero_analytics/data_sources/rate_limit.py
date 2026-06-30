@@ -62,7 +62,7 @@ class RateLimitSnapshot:
             remaining = int(raw_remaining) if raw_remaining is not None else None
             reset_epoch = int(raw_reset) if raw_reset is not None else None
             limit = int(raw_limit) if raw_limit is not None else None
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # fmt: skip
             return None
 
         reset_at = (

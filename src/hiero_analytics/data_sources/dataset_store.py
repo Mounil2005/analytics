@@ -105,7 +105,7 @@ def load_dataset(path: Path, model_class: type[T]) -> tuple[list[T], datetime] |
         return None
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # fmt: skip
         return None
     if payload.get("version") != DATASET_VERSION:
         return None
@@ -118,7 +118,7 @@ def load_dataset(path: Path, model_class: type[T]) -> tuple[list[T], datetime] |
     try:
         records = [deserialize_record(model_class, record) for record in payload.get("records", [])]
         fetched_through = datetime.fromisoformat(raw_through)
-    except (TypeError, ValueError, KeyError, AttributeError):
+    except (TypeError, ValueError, KeyError, AttributeError):  # fmt: skip
         return None
     return records, fetched_through
 
