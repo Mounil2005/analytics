@@ -85,6 +85,20 @@ PRIMARY_PALETTE = [
     "#EF4444",
 ]
 
+# Colours for the semantic repository categories (see analysis.repo_categories),
+# used to colour the maintainer network. One distinct hue per category.
+REPO_CATEGORY_COLORS = {
+    "SDKs": "#0EA5E9",
+    "Identity / DID": "#8B5CF6",
+    "Core network": "#F97316",
+    "EVM / smart contracts": "#14B8A6",
+    "Tooling / DevEx": "#F59E0B",
+    "Governance": "#EF4444",
+    "Docs / Web": "#64748B",
+    "Apps / Integrations": "#EC4899",
+    "Other": "#94A3B8",
+}
+
 # Preserve the original domain colors for the analytics charts that already
 # have established meaning in project discussions and screenshots.
 DIFFICULTY_COLORS = {
@@ -132,4 +146,15 @@ SCORECARD_CHECK_COLORS = {
     "Packaging":          "#58508d",
     "SAST":               "#ff6361",
     "Vulnerabilities":    "#8b0000",
+}
+
+# Contributor activity heatmap: the intensity colour scale plus the surrounding
+# chrome colours (figure/axes background, cell text, ticks).
+ACTIVITY_HEATMAP_CMAP = "RdYlGn"
+ACTIVITY_HEATMAP_PALETTE = {
+    "figure_bg": "#F6F8FB",
+    "axes_bg": "#FFFFFF",
+    "text_dark": "#0F172A",
+    "text_light": "#FFFFFF",
+    "tick": "#64748B",
 }

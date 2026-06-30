@@ -13,8 +13,12 @@ import pandas as pd
 
 from hiero_analytics.analysis.dataframe_utils import records_to_dataframe
 from hiero_analytics.data_sources.models import ContributorActivityRecord
+from hiero_analytics.domain.repos import bare_repo
 
 STAGE_COLUMNS = ["general_user", "triage", "committer", "maintainer"]
+
+# For the yearly rollup: rank a person's roles so we can keep only their highest.
+_STAGE_RANK = {stage: rank for rank, stage in enumerate(STAGE_COLUMNS)}
 
 _MAINTAINER_ACTIVITY_TYPES = {
     "authored_issue",
@@ -38,7 +42,7 @@ def activity_to_role_dataframe(
         if record.activity_type not in _MAINTAINER_ACTIVITY_TYPES:
             return None
 
-        repo_name = record.repo.split("/")[-1]
+        repo_name = bare_repo(record.repo)
         actor_key = record.actor.strip().lower()
         role = repo_role_lookup.get(repo_name, {}).get(actor_key, "general_user")
 
@@ -91,11 +95,13 @@ def build_maintainer_yearly_pipeline(
     *,
     active_window_days: int = 183,
 ) -> pd.DataFrame:
-    """Build yearly contributor counts per PR and issue activity stage.
+    """Build yearly counts of distinct active people by their highest governance role.
 
-    Only counts contributors active in the last 6 months of each year.
-    Past years use a fixed H2 window (stable across refreshes); the current
-    year uses a trailing ``active_window_days``-day window from today.
+    Only counts contributors active in the last 6 months of each year (past years use
+    a fixed H2 window, stable across refreshes; the current year uses a trailing
+    ``active_window_days``-day window from today). Each person is counted once per
+    year, under the highest role they held in any repo, so the bands are mutually
+    exclusive and a year's total is the number of distinct active people.
     """
     if stage_df.empty:
         return pd.DataFrame(columns=["year", *STAGE_COLUMNS])
@@ -115,8 +121,17 @@ def build_maintainer_yearly_pipeline(
 
     active_df = pd.concat(filtered_frames, ignore_index=True) if filtered_frames else stage_df.iloc[0:0]
 
+    # Keep one row per (year, actor): the highest governance role they held across all
+    # repos that year. This makes the stacked bands mutually exclusive, so a year's
+    # total is the number of distinct active people, not (person, role) pairs.
+    highest = (
+        active_df.assign(_rank=active_df["stage"].map(_STAGE_RANK))
+        .sort_values("_rank")
+        .drop_duplicates(subset=["year", "actor"], keep="last")
+    )
+
     yearly = (
-        active_df.groupby(["year", "stage"])["actor"]
+        highest.groupby(["year", "stage"])["actor"]
         .nunique()
         .unstack(fill_value=0)
         .reindex(columns=STAGE_COLUMNS, fill_value=0)

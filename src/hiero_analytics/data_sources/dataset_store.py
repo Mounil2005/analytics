@@ -17,15 +17,23 @@ serves issues, pull requests, events, etc.
 from __future__ import annotations
 
 import json
+import logging
 from collections.abc import Callable, Hashable, Iterable
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import TypeVar
 
+from hiero_analytics.config.paths import dataset_path
+
 from .serialization import deserialize_record, serialize_record
 
-DATASET_VERSION = 1
+logger = logging.getLogger(__name__)
+
+# Bump to invalidate persisted datasets after a schema change so the next run does
+# one full refresh. v2: IssueTimelineEventRecord gained an ``actor`` field, so older
+# label-event datasets must be re-fetched to populate it.
+DATASET_VERSION = 2
 
 # Re-fetch a small window before the stored watermark so edits that landed
 # mid-fetch (or under minor clock skew) are not missed. Re-merges are idempotent.
@@ -119,6 +127,27 @@ def load_dataset(path: Path, model_class: type[T]) -> tuple[list[T], datetime] |
     except (TypeError, ValueError, KeyError, AttributeError):
         return None
     return records, fetched_through
+
+
+def load_or_fetch(  # noqa: UP047
+    resource: str,
+    org: str,
+    model_class: type[T],
+    fetch_fn: Callable[[], list[T]],
+) -> list[T]:
+    """Reuse the persisted ``(resource, org)`` dataset if present, else build it.
+
+    Wraps :func:`load_dataset` with a fetch fallback and consistent logging, so the
+    runners don't each re-implement the reuse-or-fetch dance. ``fetch_fn`` produces
+    the full record list when there is no usable dataset on disk.
+    """
+    state = load_dataset(dataset_path(resource, org, "all"), model_class)
+    if state is not None:
+        records, _ = state
+        logger.info("Reusing persisted %s/%s dataset (%d records)", org, resource, len(records))
+        return records
+    logger.info("No persisted %s/%s dataset; fetching from GitHub", org, resource)
+    return fetch_fn()
 
 
 def fetch_incremental(  # noqa: UP047

@@ -44,3 +44,9 @@ outputs/data/datasets/
 
 # Local-only input data (Discord exports, etc.)
 inputs/
+
+# Generated local dashboard (bundles data; regenerable)
+outputs/dashboard.html
+
+# Assembled GitHub Pages site (built in CI from the dashboard; never committed)
+_site/
