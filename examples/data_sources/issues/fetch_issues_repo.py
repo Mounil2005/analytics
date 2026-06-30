@@ -10,6 +10,7 @@ setup_logging(modules="hiero_analytics")
 REPOSITORY = REPO
 ORGANIZATION = ORG
 
+
 def fetch_issues_in_repo() -> None:
     """Fetch and report open and closed issue counts for one repository."""
     client = GitHubClient()
@@ -31,6 +32,7 @@ def fetch_issues_in_repo() -> None:
     print(f"Open issues: {len(open_issues)}")
     print(f"Closed issues: {len(closed_issues)}")
     print(f"Total issues: {len(open_issues) + len(closed_issues)}\n")
+
 
 if __name__ == "__main__":
     fetch_issues_in_repo()

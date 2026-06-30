@@ -25,9 +25,7 @@ def test_resolve_log_level_falls_back_to_info_for_invalid_values():
 
 def test_normalize_modules_parses_strings_and_deduplicates():
     """Module parsing should trim whitespace and remove duplicates."""
-    assert logging_config._normalize_modules(
-        " a.b , c.d, a.b ,, "
-    ) == ("a.b", "c.d")
+    assert logging_config._normalize_modules(" a.b , c.d, a.b ,, ") == ("a.b", "c.d")
 
 
 def test_module_filter_limits_low_severity_logs_to_selected_modules():

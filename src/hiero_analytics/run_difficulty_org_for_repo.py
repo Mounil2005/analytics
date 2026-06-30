@@ -113,14 +113,12 @@ def main() -> None:
     pie_variants = [
         (
             difficulty_counts,
-            "Open Issues by Difficulty Distribution "
-            "(Labeled or Newly Created in Last 30 Days, Including Unknown)",
+            "Open Issues by Difficulty Distribution (Labeled or Newly Created in Last 30 Days, Including Unknown)",
             "difficulty_distribution_with_unknown_30_days.png",
         ),
         (
             difficulty_counts[difficulty_counts["difficulty"] != UNKNOWN_DIFFICULTY],
-            "Open Issues by Difficulty Distribution "
-            "(Labeled in Last 30 Days, Excluding Unknown)",
+            "Open Issues by Difficulty Distribution (Labeled in Last 30 Days, Excluding Unknown)",
             "difficulty_distribution_without_unknown_30_days.png",
         ),
     ]

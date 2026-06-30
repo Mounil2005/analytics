@@ -1,3 +1,5 @@
+"""Configuration package exposing chart, GitHub, and path constants."""
+
 from .charts import (
     DEFAULT_DPI,
     DEFAULT_FIGSIZE,
@@ -32,7 +34,7 @@ __all__ = [
     "LEGEND_FONT_SIZE",
     "GRID_ENABLED",
     "GRID_ALPHA",
-    "GRID_STYLE",    
+    "GRID_STYLE",
     "HTTP_TIMEOUT_SECONDS",
     "REQUEST_DELAY_SECONDS",
     "load_query",

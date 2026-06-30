@@ -29,7 +29,7 @@ BAR_HEIGHT = 0.68
 BAR_WIDTH = 0.62
 BAR_ROUNDING_RATIO = 0.18
 HORIZONTAL_ROW_HEIGHT = 0.42  # inches per bar for auto-sizing horizontal charts
-HORIZONTAL_FIGURE_OVERHEAD = 3.5   # inches reserved for title, axes, legend
+HORIZONTAL_FIGURE_OVERHEAD = 3.5  # inches reserved for title, axes, legend
 HORIZONTAL_FIGURE_MIN_HEIGHT = 6.0
 HORIZONTAL_FIGURE_WIDTH = 14.0
 ANNOTATION_PADDING_RATIO = 0.015
@@ -170,7 +170,9 @@ def plot_bar(
 
     # Sort bars by x-axis for numeric/datetime categories, but keep original order for categorical axes (often already sorted by total count) to preserve readability and avoid reordering issues with long labels. Rotate bars to horizontal if there are many categories or if x-axis labels are long.
     if not pd.api.types.is_categorical_dtype(df[x_col]):
-        df = df.sort_values(x_col) if is_numeric_or_datetime(df[x_col]) else df.sort_values(y_col, ascending=False)    # Auto-switch to a more report-like horizontal layout for crowded categories.
+        df = (
+            df.sort_values(x_col) if is_numeric_or_datetime(df[x_col]) else df.sort_values(y_col, ascending=False)
+        )  # Auto-switch to a more report-like horizontal layout for crowded categories.
     horizontal = _should_use_horizontal(df, x_col, rotate_x)
 
     fig, ax = create_figure()

@@ -1,3 +1,5 @@
+"""Utilities for saving DataFrames to CSV and rendering charts to disk."""
+
 from __future__ import annotations
 
 from collections.abc import Callable

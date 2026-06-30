@@ -29,7 +29,9 @@ GITHUB_HOSTED_PATTERNS = [
 ]
 
 GITHUB_HOSTED_EXACT = {
-    "ubuntu-latest", "windows-latest", "macos-latest",
+    "ubuntu-latest",
+    "windows-latest",
+    "macos-latest",
 }
 
 
@@ -80,6 +82,7 @@ def search_issues(
         delay_seconds=SEARCH_REQUEST_DELAY_SECONDS,
     )
 
+
 def has_codeowners_file(client: GitHubClient, org: str, repo: str) -> bool:
     """Checks for the existence of a CODEOWNERS file in standard repository locations."""
     paths = [".github/CODEOWNERS", "CODEOWNERS", "docs/CODEOWNERS"]
@@ -95,7 +98,7 @@ def has_codeowners_file(client: GitHubClient, org: str, repo: str) -> bool:
                 return True
         except Exception:
             continue
-    
+
     return False
 
 
@@ -129,42 +132,39 @@ def _process_workflow_file(client: GitHubClient, wf: dict) -> list[dict]:
 
         raw = base64.b64decode(resp["content"]).decode("utf-8")
         data = yaml.safe_load(raw)
-        
+
         jobs = data.get("jobs", {})
         if not isinstance(jobs, dict):
             return []
 
         for job_id, job_cfg in jobs.items():
-            if not isinstance(job_cfg, dict): 
+            if not isinstance(job_cfg, dict):
                 continue
-            
+
             job_name = job_cfg.get("name", job_id)
             runs_on = job_cfg.get("runs-on")
             if not runs_on:
                 continue
 
             labels = [runs_on] if isinstance(runs_on, (str, int)) else runs_on
-            
-            final_status = False 
-            
+
+            final_status = False
+
             for label_value in labels:
                 status = _is_self_hosted(str(label_value))
-                
+
                 if status is True:
                     final_status = True
-                    break 
+                    break
                 if status is None:
                     final_status = None
 
-            results.append({
-                "file": wf["name"],
-                "job": job_name,
-                "runner": str(runs_on),
-                "is_self_hosted": final_status
-            })
+            results.append(
+                {"file": wf["name"], "job": job_name, "runner": str(runs_on), "is_self_hosted": final_status}
+            )
     except Exception as e:
         logger.error(f"Failed to parse {wf['name']}: {e}")
-    
+
     return results
 
 
@@ -174,7 +174,7 @@ def fetch_repo_workflows(client: GitHubClient, org: str, repo: str) -> list[dict
     try:
         url = f"https://api.github.com/repos/{org}/{repo}/contents/.github/workflows"
         workflows = client.get(url)
-        
+
         if not isinstance(workflows, list):
             return []
 
@@ -189,5 +189,5 @@ def fetch_repo_workflows(client: GitHubClient, org: str, repo: str) -> list[dict
 
     except Exception as e:
         logger.debug(f"Workflow directory not found or error in {repo}: {e}")
-    
+
     return all_job_results

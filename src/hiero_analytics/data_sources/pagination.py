@@ -25,6 +25,7 @@ DEFAULT_PAGE_SIZE = 100
 # PAGE NUMBER PAGINATION
 # --------------------------------------------------------
 
+
 def paginate_page_number(
     fetch_page: Callable[[int], list[Any]],
     page_size: int = DEFAULT_PAGE_SIZE,
@@ -51,7 +52,6 @@ def paginate_page_number(
     logger.debug("Requesting pages (start_page=%d)", page)
 
     while True:
-
         logger.debug("Requesting page %d", page)
 
         items = fetch_page(page)
@@ -86,6 +86,7 @@ def paginate_page_number(
 # CURSOR PAGINATION (GraphQL)
 # --------------------------------------------------------
 
+
 def paginate_cursor(
     fetch_page: Callable[[str | None], tuple[list[Any], str | None, bool]],
     max_pages: int | None = None,
@@ -115,7 +116,6 @@ def paginate_cursor(
     )
 
     while True:
-
         logger.debug(
             "Requesting cursor page %d (cursor=%s)",
             page,
@@ -156,13 +156,12 @@ def paginate_cursor(
 # GRAPHQL CURSOR PAGE EXTRACTION
 # ---------------------------------------------------------
 
+
 def extract_graphql_cursor_page(
     data: dict[str, Any],
     nodes_path: list[str],
 ) -> tuple[list[dict[str, Any]], str | None, bool]:
-    """
-    Safely navigates a GraphQL response and extracts nodes + pagination info.
-    """
+    """Safely navigates a GraphQL response and extracts nodes + pagination info."""
     container = data.get("data", {})
     for key in nodes_path:
         if not isinstance(container, dict):

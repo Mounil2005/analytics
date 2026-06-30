@@ -123,29 +123,29 @@ STATE_COLORS = {
 }
 
 MAINTAINER_PIPELINE_COLORS = {
-    "General User": "#94A3B8",   # muted slate
-    "Triage":       "#60B8D4",   # sky blue
-    "Committer":    "#2A9D8F",   # teal
-    "Maintainer":   "#E76F51",   # coral
+    "General User": "#94A3B8",  # muted slate
+    "Triage": "#60B8D4",  # sky blue
+    "Committer": "#2A9D8F",  # teal
+    "Maintainer": "#E76F51",  # coral
 }
 
 
 SCORECARD_CHECK_COLORS = {
-    "Maintained":         "#1F77B4",
-    "Code-Review":        "#FF7F0E",
+    "Maintained": "#1F77B4",
+    "Code-Review": "#FF7F0E",
     "CII-Best-Practices": "#2CA02C",
     "Dangerous-Workflow": "#D62728",
-    "Binary-Artifacts":   "#9467BD",
-    "Token-Permissions":  "#8C564B",
-    "Pinned-Dependencies":"#E377C2",
-    "Fuzzing":            "#7F7F7F",
-    "License":            "#BCBD22",
-    "Signed-Releases":    "#17BECF",
-    "Security-Policy":    "#003f5c",
-    "Branch-Protection":  "#ffa600",
-    "Packaging":          "#58508d",
-    "SAST":               "#ff6361",
-    "Vulnerabilities":    "#8b0000",
+    "Binary-Artifacts": "#9467BD",
+    "Token-Permissions": "#8C564B",
+    "Pinned-Dependencies": "#E377C2",
+    "Fuzzing": "#7F7F7F",
+    "License": "#BCBD22",
+    "Signed-Releases": "#17BECF",
+    "Security-Policy": "#003f5c",
+    "Branch-Protection": "#ffa600",
+    "Packaging": "#58508d",
+    "SAST": "#ff6361",
+    "Vulnerabilities": "#8b0000",
 }
 
 # Contributor activity heatmap: the intensity colour scale plus the surrounding

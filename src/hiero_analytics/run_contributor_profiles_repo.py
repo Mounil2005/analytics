@@ -39,6 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 def classify_contributor(row):
+    """Classify a contributor row into a difficulty tier based on their highest PR difficulty."""
     if row.get("Advanced", 0) > 0:
         return "Advanced contributor"
     if row.get("Intermediate", 0) > 0:
@@ -49,7 +50,7 @@ def classify_contributor(row):
 
 
 def build_max_difficulty_distribution(pr_df: pd.DataFrame) -> pd.DataFrame:
-
+    """Return a DataFrame counting contributors by the highest difficulty PR they merged."""
     df = pr_df.copy()
     df["difficulty"] = df["issue_labels"].apply(assign_difficulty)
 
@@ -76,9 +77,7 @@ def build_max_difficulty_distribution(pr_df: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
 
-    result = result.sort_values("difficulty")
-
-    return result
+    return result.sort_values("difficulty")
 
 
 # =========================================================
@@ -87,7 +86,7 @@ def build_max_difficulty_distribution(pr_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_avg_contribution_mix(pr_df: pd.DataFrame) -> pd.DataFrame:
-
+    """Return mean PRs-per-difficulty for each contributor type."""
     # assign difficulty per PR
     df = pr_df.copy()
     df["difficulty"] = df["issue_labels"].apply(assign_difficulty)
@@ -101,16 +100,14 @@ def build_avg_contribution_mix(pr_df: pd.DataFrame) -> pd.DataFrame:
     per_user["contributor_type"] = per_user.apply(classify_contributor, axis=1)
 
     # average per contributor type
-    avg = per_user.groupby("contributor_type").mean(numeric_only=True).reset_index()
-
-    return avg
+    return per_user.groupby("contributor_type").mean(numeric_only=True).reset_index()
 
 
 # =========================================================
 # Plot
 # =========================================================
 def plot_max_difficulty(df: pd.DataFrame, output_path, repo: str):
-
+    """Render a bar chart of contributors grouped by maximum difficulty reached."""
     plot_bar(
         df=df,
         x_col="difficulty",
@@ -122,7 +119,7 @@ def plot_max_difficulty(df: pd.DataFrame, output_path, repo: str):
 
 
 def plot_avg_mix(df: pd.DataFrame, output_path, repo: str):
-
+    """Render a stacked bar chart showing the average difficulty mix per contributor type."""
     if "total" in df.columns:
         df = df.drop(columns=["total"])
 
@@ -167,6 +164,7 @@ def plot_avg_mix(df: pd.DataFrame, output_path, repo: str):
 
 
 def main():
+    """Fetch PR difficulty data and generate contributor profile charts for a repository."""
     repo = "hiero-sdk-python"
     repo_data_dir, repo_charts_dir = ensure_repo_dirs(f"{ORG}/{repo}")
 

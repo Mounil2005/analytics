@@ -362,4 +362,3 @@ def test_get_difficulty_over_time_event_based_excludes_issues_without_label_even
     # Issue 2 should appear from Jan 8 onward (labeled on Jan 7)
     row_jan_8 = next(row for row in series if row["date"] == "2025-01-08")
     assert row_jan_8["advanced"] == 1
-

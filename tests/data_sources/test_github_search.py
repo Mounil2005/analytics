@@ -1,3 +1,5 @@
+"""Tests for the github_search data source module."""
+
 from unittest.mock import Mock, patch
 
 import pytest
@@ -8,16 +10,16 @@ import hiero_analytics.data_sources.github_search as search
 # fixtures
 # ---------------------------------------------------------
 
+
 @pytest.fixture
 def mock_client():
+    """Return a Mock object standing in for GitHubClient."""
     return Mock()
 
 
 @pytest.fixture
 def bypass_pagination(monkeypatch):
-    """
-    Replace paginate_page_number so only one page executes.
-    """
+    """Replace paginate_page_number so only one page executes."""
     monkeypatch.setattr(
         search,
         "paginate_page_number",
@@ -29,8 +31,9 @@ def bypass_pagination(monkeypatch):
 # basic search
 # ---------------------------------------------------------
 
-def test_search_issues_returns_items(mock_client, bypass_pagination):
 
+def test_search_issues_returns_items(mock_client, bypass_pagination):  # noqa: ARG001
+    """Test that search_issues returns mapped items from the API response."""
     mock_client.get.return_value = {
         "items": [
             {"id": 1, "title": "issue1"},
@@ -48,8 +51,9 @@ def test_search_issues_returns_items(mock_client, bypass_pagination):
 # request parameters
 # ---------------------------------------------------------
 
-def test_search_issues_calls_request_correctly(mock_client, bypass_pagination):
 
+def test_search_issues_calls_request_correctly(mock_client, bypass_pagination):  # noqa: ARG001
+    """Test that search_issues sends the correct URL and query parameters."""
     mock_client.get.return_value = {"items": []}
 
     search.search_issues(mock_client, "repo:org/repo is:issue")
@@ -69,8 +73,9 @@ def test_search_issues_calls_request_correctly(mock_client, bypass_pagination):
 # filters non-dict items
 # ---------------------------------------------------------
 
-def test_search_issues_filters_invalid_items(mock_client, bypass_pagination):
 
+def test_search_issues_filters_invalid_items(mock_client, bypass_pagination):  # noqa: ARG001
+    """Test that non-dict items in the API response are filtered out."""
     mock_client.get.return_value = {
         "items": [
             {"id": 1},
@@ -90,8 +95,9 @@ def test_search_issues_filters_invalid_items(mock_client, bypass_pagination):
 # empty response
 # ---------------------------------------------------------
 
-def test_search_issues_handles_missing_items(mock_client, bypass_pagination):
 
+def test_search_issues_handles_missing_items(mock_client, bypass_pagination):  # noqa: ARG001
+    """Test that a response missing the items key returns an empty list."""
     mock_client.get.return_value = {}
 
     results = search.search_issues(mock_client, "test")
@@ -103,8 +109,9 @@ def test_search_issues_handles_missing_items(mock_client, bypass_pagination):
 # pagination integration
 # ---------------------------------------------------------
 
-def test_search_issues_uses_pagination(monkeypatch, mock_client):
 
+def test_search_issues_uses_pagination(monkeypatch, mock_client):
+    """Test that search_issues delegates to the paginator."""
     called = {"value": False}
 
     def fake_paginator(page_func, **_kwargs):
@@ -126,7 +133,7 @@ def test_has_codeowners_file_found(mock_client):
     mock_client.get.side_effect = lambda url: {"name": "CO"} if ".github/CODEOWNERS" in url else None
 
     result = search.has_codeowners_file(mock_client, "hiero-ledger", "hiero-sdk-python")
-        
+
     assert result is True
     assert mock_client.get.call_count == 1
 
@@ -137,7 +144,7 @@ def test_has_codeowners_file_not_found(mock_client):
     mock_client.get.return_value = None
 
     result = search.has_codeowners_file(mock_client, "hiero-ledger", "hiero-sdk-python")
-    
+
     assert result is False
     assert mock_client.get.call_count == 3
 
@@ -147,9 +154,7 @@ def test_fetch_repo_workflows_mock_api(mock_client):
     """Test workflow fetching and yml parsing using mocked GitHub responses."""
     mock_client.get.side_effect = [
         [{"name": "ci.yml", "url": "api.github.com/ci_yml_url"}],
-        {
-            "content": "bmFtZTogQ0kKam9iczogCiAgYnVpbGQ6CiAgICBydW5zLW9uOiBobC1zZGstcHktbGluLW1k" 
-        }
+        {"content": "bmFtZTogQ0kKam9iczogCiAgYnVpbGQ6CiAgICBydW5zLW9uOiBobC1zZGstcHktbGluLW1k"},
     ]
 
     results = search.fetch_repo_workflows(mock_client, "hiero-ledger", "hiero-sdk-python")
@@ -168,6 +173,5 @@ def test_fetch_repo_workflows_empty_dir(mock_client):
     mock_client.get.return_value = None
 
     results = search.fetch_repo_workflows(mock_client, "hiero-ledger", "empty-repo")
-    
-    assert results == []
 
+    assert results == []

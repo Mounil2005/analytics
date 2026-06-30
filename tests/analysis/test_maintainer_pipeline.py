@@ -81,9 +81,7 @@ def test_activity_to_role_dataframe_matches_actor_case_insensitively():
 
 def test_build_maintainer_yearly_pipeline_counts_unique_actors_per_stage():
     """Yearly rollups should count unique actors once per stage."""
-    role_lookup = {
-        "repo-a": {"alice": "general_user", "bob": "triage", "carol": "committer", "dana": "maintainer"}
-    }
+    role_lookup = {"repo-a": {"alice": "general_user", "bob": "triage", "carol": "committer", "dana": "maintainer"}}
     # Use H2 events so they fall inside the completed-year activity window.
     records = [
         _record("authored_issue", "dana", "org/repo-a", 2024, target_type="issue", month=7),
@@ -196,7 +194,7 @@ def test_yearly_pipeline_excludes_h1_events_for_completed_year():
     role_lookup = {"repo-a": {}}
     records = [
         _record("authored_pull_request", "alice", "org/repo-a", 2024, month=3),  # H1 – excluded
-        _h2_record("authored_pull_request", "bob", "org/repo-a", 2024),           # H2 – included
+        _h2_record("authored_pull_request", "bob", "org/repo-a", 2024),  # H2 – included
     ]
 
     stage_df = activity_to_role_dataframe(records, role_lookup)

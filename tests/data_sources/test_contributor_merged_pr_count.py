@@ -1,6 +1,4 @@
-"""
-Tests for contributor merged PR count functionality.
-"""
+"""Tests for contributor merged PR count functionality."""
 
 from unittest.mock import Mock
 
@@ -9,21 +7,20 @@ import pytest
 import hiero_analytics.data_sources.github_ingest as ingest
 from hiero_analytics.data_sources.models import ContributorMergedPRCountRecord
 
-
 # ---------------------------------------------------------
 # fixtures
 # ---------------------------------------------------------
 
+
 @pytest.fixture
 def mock_client():
+    """Return a Mock object standing in for GitHubClient."""
     return Mock()
 
 
 @pytest.fixture
 def bypass_pagination(monkeypatch):
-    """
-    Replace paginate_cursor with a single-page execution.
-    """
+    """Replace paginate_cursor with a single-page execution."""
     monkeypatch.setattr(
         ingest._common,
         "paginate_cursor",
@@ -34,6 +31,7 @@ def bypass_pagination(monkeypatch):
 # ---------------------------------------------------------
 # ContributorMergedPRCountRecord model tests
 # ---------------------------------------------------------
+
 
 def test_contributor_merged_pr_count_record_creation():
     """Test creating a ContributorMergedPRCountRecord."""
@@ -74,6 +72,7 @@ def test_contributor_merged_pr_count_record_frozen():
 # ---------------------------------------------------------
 # fetch_repo_contributor_merged_pr_count_graphql tests
 # ---------------------------------------------------------
+
 
 def test_fetch_repo_contributor_merged_pr_count_graphql(mock_client):
     """Test fetching merged PR count for a single repository."""
@@ -131,9 +130,9 @@ def test_fetch_repo_contributor_merged_pr_count_graphql_zero(mock_client):
 # fetch_org_contributor_merged_pr_count_graphql tests
 # ---------------------------------------------------------
 
-def test_fetch_org_contributor_merged_pr_count_graphql(mock_client, bypass_pagination):
+
+def test_fetch_org_contributor_merged_pr_count_graphql(mock_client, bypass_pagination):  # noqa: ARG001
     """Test fetching merged PR counts across all repositories in an org."""
-    
     # Mock for fetching repos
     mock_client.graphql.side_effect = [
         {
@@ -186,14 +185,16 @@ def test_fetch_org_contributor_merged_pr_count_graphql(mock_client, bypass_pagin
     assert repo1_record is not None
     assert repo1_record.login == "carol"
     assert repo1_record.merged_pr_count == 10
-    
+
     assert repo2_record is not None
     assert repo2_record.login == "carol"
     assert repo2_record.merged_pr_count == 5
 
+
 # ---------------------------------------------------------
 # dataclass serialization
 # ---------------------------------------------------------
+
 
 def test_contributor_merged_pr_count_in_list():
     """Test that records work well in collections."""

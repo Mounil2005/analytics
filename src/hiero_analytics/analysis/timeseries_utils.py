@@ -28,6 +28,7 @@ _DIFFICULTY_OVER_TIME_SPECS = (
 
 
 def normalize_datetime(value: datetime | None) -> datetime | None:
+    """Normalize a datetime to UTC, returning None if the input is None."""
     if value is None:
         return None
 
@@ -38,6 +39,7 @@ def normalize_datetime(value: datetime | None) -> datetime | None:
 
 
 def weekly_sample_points(start_at: datetime, end_at: datetime) -> list[datetime]:
+    """Return a list of UTC datetimes spaced one week apart from start_at to end_at."""
     points: list[datetime] = []
     current = start_at
 
@@ -52,6 +54,7 @@ def weekly_sample_points(start_at: datetime, end_at: datetime) -> list[datetime]
 
 
 def init_row_for_sample(sample_point: datetime) -> dict[str, int | str]:
+    """Return a zeroed-out difficulty row dict for a given sample point."""
     return {
         "date": sample_point.date().isoformat(),
         "gfi": 0,
@@ -62,6 +65,7 @@ def init_row_for_sample(sample_point: datetime) -> dict[str, int | str]:
 
 
 def difficulty_key_for_label(label: str | None):
+    """Return the difficulty bucket key for a single label string, or None if unrecognised."""
     if not label:
         return None
 
@@ -111,6 +115,7 @@ def aggregate_intervals_to_series(
     intervals_by_issue: Iterable[Iterable[tuple[str, datetime, datetime]]],
     sample_points: Iterable[datetime],
 ) -> list[dict[str, int | str]]:
+    """Aggregate open-interval data into a weekly series of difficulty bucket counts."""
     series: list[dict[str, int | str]] = []
 
     for sample_point in sample_points:

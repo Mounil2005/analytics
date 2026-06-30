@@ -42,12 +42,7 @@ def build_role_count_comparison(
         .copy()
     )
 
-    comparison = (
-        actual.merge(predicted, on="repo", how="outer")
-        .fillna(0)
-        .sort_values("repo")
-        .reset_index(drop=True)
-    )
+    comparison = actual.merge(predicted, on="repo", how="outer").fillna(0).sort_values("repo").reset_index(drop=True)
     ordered_columns = ["repo"]
     for role in ROLE_COLUMNS:
         ordered_columns.extend([f"predicted_{role}", f"actual_{role}"])
@@ -71,15 +66,9 @@ def build_role_count_differences(comparison_df: pd.DataFrame) -> pd.DataFrame:
     differences = pd.DataFrame(
         {
             "repo": comparison_df["repo"],
-            "triage_difference": (
-                comparison_df["predicted_triage"] - comparison_df["actual_triage"]
-            ),
-            "committer_difference": (
-                comparison_df["predicted_committer"] - comparison_df["actual_committer"]
-            ),
-            "maintainer_difference": (
-                comparison_df["predicted_maintainer"] - comparison_df["actual_maintainer"]
-            ),
+            "triage_difference": (comparison_df["predicted_triage"] - comparison_df["actual_triage"]),
+            "committer_difference": (comparison_df["predicted_committer"] - comparison_df["actual_committer"]),
+            "maintainer_difference": (comparison_df["predicted_maintainer"] - comparison_df["actual_maintainer"]),
         }
     )
     return differences.astype(
@@ -121,15 +110,9 @@ def build_validation_summary(
                 "repo_count": int(len(error_df)),
                 "total_rmse": total_rmse,
                 "mean_repo_rmse": mean_repo_rmse,
-                "actual_unique_triage_holders": int(
-                    distinct_role_holders.get("triage", 0)
-                ),
-                "actual_unique_committer_holders": int(
-                    distinct_role_holders.get("committer", 0)
-                ),
-                "actual_unique_maintainer_holders": int(
-                    distinct_role_holders.get("maintainer", 0)
-                ),
+                "actual_unique_triage_holders": int(distinct_role_holders.get("triage", 0)),
+                "actual_unique_committer_holders": int(distinct_role_holders.get("committer", 0)),
+                "actual_unique_maintainer_holders": int(distinct_role_holders.get("maintainer", 0)),
             }
         ]
     )

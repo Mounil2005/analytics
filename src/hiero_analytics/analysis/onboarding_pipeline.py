@@ -1,3 +1,5 @@
+"""Pipeline builders for Good First Issue onboarding funnel analysis."""
+
 from __future__ import annotations
 
 import pandas as pd
@@ -26,7 +28,7 @@ def build_gfi_pipeline(
     pd.DataFrame
         DataFrame with columns ["year", "gfi", "gfic"] sorted by year.
     """
-    pipeline = (
+    return (
         gfi_yearly.rename(columns={"count": "gfi"})
         .merge(
             gfic_yearly.rename(columns={"count": "gfic"}),
@@ -37,8 +39,6 @@ def build_gfi_pipeline(
         .astype({"gfi": int, "gfic": int})
         .sort_values("year")
     )
-
-    return pipeline
 
 
 def build_onboarding_repo_pipeline(
@@ -66,11 +66,9 @@ def build_onboarding_repo_pipeline(
     gfi = gfi_total_by_repo.rename(columns={"count": "gfi"})
     gfic = gfic_total_by_repo.rename(columns={"count": "gfic"})
 
-    pipeline = (
+    return (
         gfi.merge(gfic, on="repo", how="outer")
         .fillna(0)
         .astype({"gfi": int, "gfic": int})
         .sort_values("gfi", ascending=False)
     )
-
-    return pipeline

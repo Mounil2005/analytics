@@ -1,3 +1,5 @@
+"""Analysis functions for converting OpenSSF Scorecard records into DataFrames."""
+
 from __future__ import annotations
 
 import pandas as pd
@@ -35,12 +37,11 @@ def scorecard_to_dataframe(scorecards: list[ScorecardRecord]) -> pd.DataFrame:
 def scorecard_stacked_dataframe(scorecards: list[ScorecardRecord]) -> pd.DataFrame:
     """
     Convert ScorecardRecord list into a dataframe with checks as columns.
+
     Missing checks are filled with 0.
     """
     if not scorecards:
-        return pd.DataFrame(
-            columns=["repo", "score", "date", *CHECK_COLUMNS]
-        )
+        return pd.DataFrame(columns=["repo", "score", "date", *CHECK_COLUMNS])
 
     rows: list[dict] = []
 
@@ -55,12 +56,8 @@ def scorecard_stacked_dataframe(scorecards: list[ScorecardRecord]) -> pd.DataFra
             row[check] = 0.0
 
         if s.checks:
-            for name, value in s.checks.items():
-                if name in CHECK_COLUMNS:
-                    row[name] = value
+            row.update({name: value for name, value in s.checks.items() if name in CHECK_COLUMNS})
 
         rows.append(row)
 
-    df = pd.DataFrame(rows)
-
-    return df
+    return pd.DataFrame(rows)

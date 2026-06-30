@@ -91,11 +91,7 @@ def _difficulty_intervals_for_issue(
 
 def _current_difficulty_labels(issue: IssueRecord) -> set[str]:
     """Return the currently active difficulty labels on an issue."""
-    return {
-        label.lower()
-        for label in issue.labels
-        if difficulty_key_for_label(label) is not None
-    }
+    return {label.lower() for label in issue.labels if difficulty_key_for_label(label) is not None}
 
 
 def issue_overlaps_window(issue: IssueRecord, start_at: datetime, end_at: datetime) -> bool:
@@ -133,9 +129,7 @@ def _windowed_difficulty_intervals_for_issue(
         is_open = issue.state.lower() == "open"
 
         relevant_events = [
-            event
-            for event in issue_events
-            if effective_start <= normalize_datetime(event.occurred_at) <= end_at
+            event for event in issue_events if effective_start <= normalize_datetime(event.occurred_at) <= end_at
         ]
 
         for event in reversed(relevant_events):
@@ -202,11 +196,7 @@ def get_difficulty_over_time(
         return []
 
     end_at = normalize_datetime(today) or datetime.now(UTC)
-    start_at = min(
-        created_at
-        for issue in issues
-        if (created_at := normalize_datetime(issue.created_at)) is not None
-    )
+    start_at = min(created_at for issue in issues if (created_at := normalize_datetime(issue.created_at)) is not None)
 
     if end_at < start_at:
         end_at = start_at
@@ -224,11 +214,7 @@ def get_difficulty_over_time(
         for issue in issues
     ]
 
-    series: list[dict[str, str | int]] = []
-
-    series = aggregate_intervals_to_series(intervals_by_issue, weekly_sample_points(start_at, end_at))
-
-    return series
+    return aggregate_intervals_to_series(intervals_by_issue, weekly_sample_points(start_at, end_at))
 
 
 def get_difficulty_over_time_windowed(
@@ -305,8 +291,7 @@ def get_difficulty_over_time_event_based(
     filtered_issues = [
         issue
         for issue in issues
-        if (created := normalize_datetime(issue.created_at)) is not None
-        and start_at <= created <= end_at
+        if (created := normalize_datetime(issue.created_at)) is not None and start_at <= created <= end_at
     ]
 
     if not filtered_issues:
@@ -416,12 +401,7 @@ def cumulative_timeseries(df: pd.DataFrame, date_col: str) -> pd.DataFrame:
     if df.empty:
         return pd.DataFrame(columns=[date_col, "count"])
 
-    out = (
-        df[[date_col]]
-        .dropna()
-        .sort_values(date_col)
-        .assign(count=1)
-    )
+    out = df[[date_col]].dropna().sort_values(date_col).assign(count=1)
 
     out["count"] = out["count"].cumsum()
 

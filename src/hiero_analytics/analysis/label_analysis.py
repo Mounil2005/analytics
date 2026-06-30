@@ -1,4 +1,5 @@
 """Module for analyzing and counting repository labels."""
+
 from __future__ import annotations
 
 from hiero_analytics.data_sources.models import IssueRecord
@@ -34,7 +35,6 @@ def _count_issues(
     results = {spec.name: 0 for spec in specs}
 
     for issue in issues:
-
         if closed_only and issue.state.lower() != "closed":
             continue
 

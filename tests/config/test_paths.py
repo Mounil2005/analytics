@@ -134,12 +134,8 @@ def test_load_query_appends_referenced_fragments(monkeypatch, tmp_path):
     """A query spreading a fragment has that fragment's definition appended."""
     queries_dir = tmp_path / "data_sources" / "queries"
     (queries_dir / "fragments").mkdir(parents=True)
-    (queries_dir / "q.graphql").write_text(
-        "query { repository { ...Foo } }", encoding="utf-8"
-    )
-    (queries_dir / "fragments" / "Foo.graphql").write_text(
-        "fragment Foo on Repository { name }", encoding="utf-8"
-    )
+    (queries_dir / "q.graphql").write_text("query { repository { ...Foo } }", encoding="utf-8")
+    (queries_dir / "fragments" / "Foo.graphql").write_text("fragment Foo on Repository { name }", encoding="utf-8")
 
     monkeypatch.setattr(paths, "SRC", tmp_path)
     paths._query_cache.clear()

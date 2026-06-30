@@ -56,6 +56,7 @@ def _extract_label_name(container: Mapping | None) -> str | None:
 @dataclass(frozen=True)
 class BaseRecord:
     """Base class for all GitHub data records."""
+
     @staticmethod
     def _owner(context: dict) -> str:
         """Extract the owner name from a GraphQL hydration context."""
@@ -83,9 +84,11 @@ class BaseRecord:
             return None
         return login
 
+
 @dataclass(frozen=True)
 class RepositoryRecord(BaseRecord):
     """Metadata describing a GitHub repository."""
+
     full_name: str
     name: str
     owner: str
@@ -102,7 +105,7 @@ class RepositoryRecord(BaseRecord):
         language = None
         if node.get("primaryLanguage") and isinstance(node["primaryLanguage"], Mapping):
             language = node["primaryLanguage"].get("name")
-        
+
         return [
             cls(
                 full_name=f"{cls._owner(context)}/{node['name']}",
@@ -120,6 +123,7 @@ class RepositoryRecord(BaseRecord):
 @dataclass(frozen=True)
 class IssueRecord(BaseRecord):
     """A normalized GitHub issue record."""
+
     repo: str
     number: int
     title: str
@@ -223,11 +227,7 @@ class IssueTimelineEventRecord:
         if occurred_at is None:
             return None
 
-        label_name = (
-            _extract_label_name(event)
-            if event_type in {"labeled", "unlabeled"}
-            else None
-        )
+        label_name = _extract_label_name(event) if event_type in {"labeled", "unlabeled"} else None
 
         return cls(
             repo=f"{owner}/{repo}",
@@ -264,7 +264,8 @@ class IssueTimelineEventRecord:
             logger.warning(
                 "Issue %s#%s has >100 label events; only the first 100 were "
                 "fetched (label-event history truncated for this issue)",
-                full_repo, issue_number,
+                full_repo,
+                issue_number,
             )
 
         for item in timeline.get("nodes", []):
@@ -298,6 +299,7 @@ class IssueTimelineEventRecord:
 @dataclass(frozen=True)
 class PullRequestDifficultyRecord(BaseRecord):
     """Metadata linking a merged pull request to the issues it closes."""
+
     repo: str
     pr_number: int
     pr_created_at: datetime
@@ -340,6 +342,7 @@ class PullRequestDifficultyRecord(BaseRecord):
 @dataclass(frozen=True)
 class ContributorActivityRecord(BaseRecord):
     """A normalized contributor activity event for issue/PR lifecycle actions."""
+
     repo: str
     activity_type: str
     actor: str
@@ -352,6 +355,7 @@ class ContributorActivityRecord(BaseRecord):
 
     @classmethod
     def from_github_node(cls, node: dict, context: dict) -> list[ContributorActivityRecord]:
+        """Build ContributorActivityRecord instances from a raw GitHub GraphQL node."""
         repo_name = cls._repo_name(context)
         cutoff = context.get("cutoff")
         records = []
@@ -428,6 +432,7 @@ class ContributorActivityRecord(BaseRecord):
 @dataclass(frozen=True)
 class ContributorMergedPRCountRecord(BaseRecord):
     """Total count of merged pull requests for a contributor in a repository."""
+
     repo: str
     login: str
     merged_pr_count: int
@@ -451,22 +456,27 @@ class ContributorMergedPRCountRecord(BaseRecord):
 @dataclass(frozen=True)
 class ScorecardRecord:
     """Normalized OpenSSF Scorecard record."""
+
     repo: str
     score: float
     checks: dict[str, int]
     date: datetime
 
+
 @dataclass(frozen=True)
 class CodeOwnersRecord:
     """Represents the presence of a CODEOWNERS file in a repository."""
+
     repo: str
     status: bool
+
 
 @dataclass(frozen=True)
 class RunnerRecord:
     """Represents usage for a specific GitHub Actions job."""
+
     repo: str
     workflow_file: str
     job_name: str
     runner: str
-    is_self_hosted: bool | None # None = undefine/fallback/env-param
+    is_self_hosted: bool | None  # None = undefine/fallback/env-param

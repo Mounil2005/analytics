@@ -49,7 +49,5 @@ def test_plot_and_save_writes_csv_only_when_path_given(tmp_path):
     plot_and_save(df, _recorder(calls), output_path=tmp_path / "c.png")
     assert not list(tmp_path.glob("*.csv"))
 
-    plot_and_save(
-        df, _recorder(calls), output_path=tmp_path / "c.png", csv_path=tmp_path / "d.csv"
-    )
+    plot_and_save(df, _recorder(calls), output_path=tmp_path / "c.png", csv_path=tmp_path / "d.csv")
     assert (tmp_path / "d.csv").exists()

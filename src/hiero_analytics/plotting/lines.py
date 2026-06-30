@@ -319,6 +319,7 @@ def plot_multiline(
         **placement,
     )
 
+
 def plot_stacked_area(
     df: pd.DataFrame,
     x_col: str,
@@ -348,8 +349,13 @@ def plot_stacked_area(
 
     fig, ax = create_figure()
     palette = build_palette(len(stack_cols))
-    series_colors = [colors.get(label, palette[index]) if colors else palette[index] for index, label in enumerate(labels)]
-    legend_handles = [Patch(facecolor=color, edgecolor="none", label=label) for color, label in zip(series_colors, labels, strict=True)]
+    series_colors = [
+        colors.get(label, palette[index]) if colors else palette[index] for index, label in enumerate(labels)
+    ]
+    legend_handles = [
+        Patch(facecolor=color, edgecolor="none", label=label)
+        for color, label in zip(series_colors, labels, strict=True)
+    ]
 
     collections = ax.stackplot(
         data[x_col],

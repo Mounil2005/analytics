@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import matplotlib
 import pytest
@@ -17,17 +17,16 @@ from hiero_analytics.data_sources.models import (
     RepositoryRecord,
 )
 
-
 # Test data factories
 
 
 def _test_repo(name: str, pushed_at=None, language=None) -> RepositoryRecord:
     """Create a test repository record."""
-    from datetime import datetime, UTC, timedelta
-    
+    from datetime import UTC, datetime, timedelta
+
     if pushed_at is None:
         pushed_at = datetime.now(UTC) - timedelta(days=5)
-    
+
     return RepositoryRecord(
         full_name=f"hiero-hackers/{name}",
         name=name,
@@ -39,8 +38,8 @@ def _test_repo(name: str, pushed_at=None, language=None) -> RepositoryRecord:
 
 def _test_activity(repo: str, actor: str) -> ContributorActivityRecord:
     """Create a test contributor activity record."""
-    from datetime import datetime, UTC
-    
+    from datetime import UTC, datetime
+
     return ContributorActivityRecord(
         repo=repo,
         activity_type="OPENED",
@@ -98,32 +97,32 @@ def test_main_creates_output_files(
     # Redirect paths to tmp_path
     monkeypatch.setattr(
         "hiero_analytics.run_hiero_hackers_org.ensure_org_dirs",
-        lambda org: (tmp_path / "data", tmp_path / "charts"),
+        lambda _org: (tmp_path / "data", tmp_path / "charts"),
     )
-    
+
     # Mock GitHub API calls
     monkeypatch.setattr(
         "hiero_analytics.run_hiero_hackers_org.fetch_org_repos_graphql",
-        lambda client, org: synthetic_repos,
+        lambda _client, _org: synthetic_repos,
     )
     monkeypatch.setattr(
         "hiero_analytics.run_hiero_hackers_org.fetch_org_contributor_activity_graphql",
-        lambda client, org: synthetic_activity,
+        lambda _client, _org: synthetic_activity,
     )
-    
+
     # Mock GitHubClient initialization
     monkeypatch.setattr(
         "hiero_analytics.run_hiero_hackers_org.GitHubClient",
         lambda: mock_github_client,
     )
-    
+
     # Run the main function
     runner.main()
-    
+
     # Assert expected output files exist
     charts_dir = tmp_path / "charts"
     data_dir = tmp_path / "data"
-    
+
     expected_charts = [
         "language_distribution.png",
         "push_activity.png",
@@ -134,12 +133,12 @@ def test_main_creates_output_files(
         "push_activity.csv",
         "contributor_counts.csv",
     ]
-    
+
     for chart_file in expected_charts:
         chart_path = charts_dir / chart_file
         assert chart_path.exists(), f"Chart {chart_file} not created"
         assert os.path.getsize(chart_path) > 0, f"Chart {chart_file} is empty"
-    
+
     for csv_file in expected_csvs:
         csv_path = data_dir / csv_file
         assert csv_path.exists(), f"CSV {csv_file} not created"
@@ -156,28 +155,28 @@ def test_main_handles_empty_activity(
     # Redirect paths to tmp_path
     monkeypatch.setattr(
         "hiero_analytics.run_hiero_hackers_org.ensure_org_dirs",
-        lambda org: (tmp_path / "data", tmp_path / "charts"),
+        lambda _org: (tmp_path / "data", tmp_path / "charts"),
     )
-    
+
     # Mock GitHub API calls
     monkeypatch.setattr(
         "hiero_analytics.run_hiero_hackers_org.fetch_org_repos_graphql",
-        lambda client, org: synthetic_repos,
+        lambda _client, _org: synthetic_repos,
     )
     monkeypatch.setattr(
         "hiero_analytics.run_hiero_hackers_org.fetch_org_contributor_activity_graphql",
-        lambda client, org: [],  # Empty activity
+        lambda _client, _org: [],  # Empty activity
     )
-    
+
     # Mock GitHubClient initialization
     monkeypatch.setattr(
         "hiero_analytics.run_hiero_hackers_org.GitHubClient",
         lambda: mock_github_client,
     )
-    
+
     # Should not raise an exception
     runner.main()
-    
+
     # Core charts should still exist
     charts_dir = tmp_path / "charts"
     assert (charts_dir / "language_distribution.png").exists()
@@ -193,24 +192,24 @@ def test_main_with_empty_repos(
     # Redirect paths to tmp_path
     monkeypatch.setattr(
         "hiero_analytics.run_hiero_hackers_org.ensure_org_dirs",
-        lambda org: (tmp_path / "data", tmp_path / "charts"),
+        lambda _org: (tmp_path / "data", tmp_path / "charts"),
     )
-    
+
     # Mock GitHub API calls
     monkeypatch.setattr(
         "hiero_analytics.run_hiero_hackers_org.fetch_org_repos_graphql",
-        lambda client, org: [],  # Empty repos
+        lambda _client, _org: [],  # Empty repos
     )
     monkeypatch.setattr(
         "hiero_analytics.run_hiero_hackers_org.fetch_org_contributor_activity_graphql",
-        lambda client, org: [],
+        lambda _client, _org: [],
     )
-    
+
     # Mock GitHubClient initialization
     monkeypatch.setattr(
         "hiero_analytics.run_hiero_hackers_org.GitHubClient",
         lambda: mock_github_client,
     )
-    
+
     # Should not raise an exception
     runner.main()

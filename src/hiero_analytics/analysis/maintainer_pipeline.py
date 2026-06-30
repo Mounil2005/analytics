@@ -69,9 +69,7 @@ def activity_to_role_dataframe(
     )
 
 
-def _active_window_for_year(
-    year: int, today: datetime, window_days: int = 183
-) -> tuple[datetime, datetime]:
+def _active_window_for_year(year: int, today: datetime, window_days: int = 183) -> tuple[datetime, datetime]:
     """Return the (start, end) activity window for a given year.
 
     Completed years use a fixed H2 window (Jul 1 – Dec 31) so historical

@@ -48,13 +48,10 @@ def main() -> None:
     start_at = end_at - timedelta(days=WINDOW_DAYS)
 
     logger.info("Running event-based difficulty-over-time analytics for org: %s", ORG)
-    logger.info(
-        "Window: "
-        f"{start_at.date().isoformat()} to {end_at.date().isoformat()}"
-    )
+    logger.info(f"Window: {start_at.date().isoformat()} to {end_at.date().isoformat()}")
 
     client = GitHubClient()
-    
+
     # Fetch all issues (open and closed) to get the complete issue set.
     all_issues = fetch_org_issues_graphql(client, org=ORG, states=["OPEN", "CLOSED"])
     logger.info("Fetched %d total issues", len(all_issues))

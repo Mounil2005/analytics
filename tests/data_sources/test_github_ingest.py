@@ -18,6 +18,7 @@ from hiero_analytics.data_sources.models import (
 # helpers
 # ---------------------------------------------------------
 
+
 @pytest.fixture
 def mock_client():
     """Provide a shared mock GitHub client."""
@@ -37,6 +38,7 @@ def bypass_pagination(monkeypatch):
 # ---------------------------------------------------------
 # repositories
 # ---------------------------------------------------------
+
 
 def test_fetch_org_repos_graphql(mock_client, bypass_pagination):
     """Org repository fetches should hydrate normalized repository records."""
@@ -69,6 +71,7 @@ def test_fetch_org_repos_graphql(mock_client, bypass_pagination):
 # ---------------------------------------------------------
 # repository issues
 # ---------------------------------------------------------
+
 
 def test_fetch_repo_issues_graphql(mock_client, bypass_pagination):
     """Repo issue fetches should hydrate normalized issue records."""
@@ -269,6 +272,7 @@ def test_fetch_repo_issue_events_rest_since(mock_client):
 # org issues parallel
 # ---------------------------------------------------------
 
+
 def test_fetch_org_issues_graphql_parallel(monkeypatch, mock_client, tmp_path):
     """A first org-issue fetch combines per-repo full-fetch results."""
     repos = [
@@ -279,8 +283,7 @@ def test_fetch_org_issues_graphql_parallel(monkeypatch, mock_client, tmp_path):
     monkeypatch.setattr(
         ingest.issues,
         "dataset_path",
-        lambda resource, scope, fingerprint="all": tmp_path
-        / f"{resource}_{scope}_{fingerprint}.json",
+        lambda resource, scope, fingerprint="all": tmp_path / f"{resource}_{scope}_{fingerprint}.json",
     )
     monkeypatch.setattr(
         ingest._common,
@@ -319,6 +322,7 @@ def test_fetch_org_issues_graphql_parallel(monkeypatch, mock_client, tmp_path):
 # merged PR difficulty
 # ---------------------------------------------------------
 
+
 def test_fetch_repo_merged_pr_difficulty_graphql(mock_client, bypass_pagination):
     """Merged PR difficulty fetches should hydrate linked issue records."""
     _ = bypass_pagination
@@ -339,9 +343,7 @@ def test_fetch_repo_merged_pr_difficulty_graphql(mock_client, bypass_pagination)
                                 "nodes": [
                                     {
                                         "number": 1,
-                                        "labels": {
-                                            "nodes": [{"name": "good first issue"}]
-                                        },
+                                        "labels": {"nodes": [{"name": "good first issue"}]},
                                     }
                                 ]
                             },
@@ -375,6 +377,7 @@ def test_fetch_repo_merged_pr_difficulty_graphql(mock_client, bypass_pagination)
 # ---------------------------------------------------------
 # merged PR org parallel
 # ---------------------------------------------------------
+
 
 def test_fetch_org_merged_pr_difficulty_graphql(monkeypatch, mock_client):
     """Org merged-PR difficulty fetches should combine repo-level results."""
@@ -423,6 +426,7 @@ def test_fetch_org_merged_pr_difficulty_graphql(monkeypatch, mock_client):
 # issue label events (GraphQL timelineItems)
 # ---------------------------------------------------------
 
+
 def _label_events_payload():
     """Build a GraphQL issues+timelineItems response for two issues."""
     return {
@@ -462,7 +466,11 @@ def test_fetch_repo_issue_label_events_graphql_parses_events(mock_client, bypass
     mock_client.graphql.return_value = _label_events_payload()
 
     events = ingest.fetch_repo_issue_label_events_graphql(
-        mock_client, "org", "repo", states=["OPEN"], use_cache=False,
+        mock_client,
+        "org",
+        "repo",
+        states=["OPEN"],
+        use_cache=False,
     )
 
     assert [(e.issue_number, e.event_type, e.label) for e in events] == [
@@ -473,7 +481,9 @@ def test_fetch_repo_issue_label_events_graphql_parses_events(mock_client, bypass
 
 
 def test_fetch_repo_issue_label_events_graphql_uses_stable_cache_key(
-    mock_client, bypass_pagination, monkeypatch,
+    mock_client,
+    bypass_pagination,
+    monkeypatch,
 ):
     """Cache key must not embed a per-run timestamp (guards the since-churn bug)."""
     _ = bypass_pagination
@@ -526,7 +536,7 @@ def test_fetch_org_records_parallel_recovers_transient_then_raises_partial(monke
     # Records that DID arrive are carried so the store can still merge them.
     assert set(exc.records) == {"ok-rec", "flaky-rec"}  # flaky recovered on retry
     assert [r.name for r in exc.failed_repos] == ["broken"]  # only the twice-failer
-    assert calls["flaky"] == 2   # retried once, then succeeded
+    assert calls["flaky"] == 2  # retried once, then succeeded
     assert calls["broken"] == 2  # retried once, then given up
 
 
@@ -535,8 +545,6 @@ def test_fetch_org_records_parallel_returns_all_when_every_repo_succeeds(monkeyp
     repos = [_repo("a"), _repo("b")]
     monkeypatch.setattr(ingest._common, "fetch_org_repos_graphql", lambda _c, _o: repos)
 
-    result = ingest._fetch_org_records_parallel(
-        Mock(), "org", 4, lambda repo: [f"{repo.name}-rec"], "test"
-    )
+    result = ingest._fetch_org_records_parallel(Mock(), "org", 4, lambda repo: [f"{repo.name}-rec"], "test")
 
     assert set(result) == {"a-rec", "b-rec"}

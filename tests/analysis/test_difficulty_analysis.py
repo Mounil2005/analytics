@@ -100,9 +100,7 @@ def test_build_difficulty_dataframe_orders_specs_then_unknown():
 
     result = build_difficulty_dataframe(df)
 
-    assert list(result["difficulty"]) == [spec.name for spec in DIFFICULTY_LEVELS] + [
-        UNKNOWN_DIFFICULTY
-    ]
+    assert list(result["difficulty"]) == [spec.name for spec in DIFFICULTY_LEVELS] + [UNKNOWN_DIFFICULTY]
     counts = dict(zip(result["difficulty"], result["count"], strict=True))
     assert counts["Beginner"] == 1
     assert counts["Advanced"] == 1
@@ -142,9 +140,7 @@ def test_build_difficulty_dataframe_empty_is_all_zero():
     result = build_difficulty_dataframe(df)
 
     assert int(result["count"].sum()) == 0
-    assert list(result["difficulty"]) == [spec.name for spec in DIFFICULTY_LEVELS] + [
-        UNKNOWN_DIFFICULTY
-    ]
+    assert list(result["difficulty"]) == [spec.name for spec in DIFFICULTY_LEVELS] + [UNKNOWN_DIFFICULTY]
 
 
 # ---------------------------------------------------------------------------
@@ -342,11 +338,7 @@ def test_unknown_bucket_is_disjoint_from_labeled():
     ]
 
     unknown = issues_unlabeled_created_since(issues, CUTOFF, DIFFICULTY_LEVELS)
-    labeled = {
-        (i.repo, i.number)
-        for i in issues
-        if any(s.matches(set(i.labels)) for s in DIFFICULTY_LEVELS)
-    }
+    labeled = {(i.repo, i.number) for i in issues if any(s.matches(set(i.labels)) for s in DIFFICULTY_LEVELS)}
 
     assert unknown.isdisjoint(labeled)
     assert unknown == {("org/repo", 1)}

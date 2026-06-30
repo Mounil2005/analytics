@@ -92,8 +92,6 @@ def _slugify(value: str) -> str:
     return slug or "cache"
 
 
-
-
 def _normalize_cached_at(cached_at: datetime) -> datetime:
     """Ensure cached timestamps are offset-aware and normalized to UTC."""
     if cached_at.tzinfo is None:
