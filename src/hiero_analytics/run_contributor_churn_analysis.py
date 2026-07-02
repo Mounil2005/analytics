@@ -5,28 +5,22 @@ import os
 import pandas as pd
 
 from hiero_analytics.analysis.contributor_churn import compute_progression_stats, compute_transition_metrics
+from hiero_analytics.analysis.difficulty_analysis import assign_difficulty
 from hiero_analytics.analysis.prs import prs_to_dataframe
-from hiero_analytics.config.logging import setup_logging
+from hiero_analytics.config.logging_config import setup_logging
 from hiero_analytics.config.paths import ORG, ensure_repo_dirs
 from hiero_analytics.data_sources.github_client import GitHubClient
 from hiero_analytics.data_sources.github_ingest import fetch_repo_merged_pr_difficulty_graphql
-from hiero_analytics.domain.labels import DIFFICULTY_LEVELS
+from hiero_analytics.domain.labels import DIFFICULTY_LEVELS, DIFFICULTY_ORDER
 from hiero_analytics.plotting.bars import plot_bar
 from hiero_analytics.plotting.lines import plot_line
-
-setup_logging()
 
 ORG_NAME = ORG
 REPO = "hiero-sdk-python"
 short_repo = REPO.split("/")[-1]
 
-
-def get_contributor_level(labels: set[str]) -> str:
-    """Classify PR difficulty level based on labels."""
-    for spec in reversed(DIFFICULTY_LEVELS):  # advanced, intermediate, beginner, gfi
-        if spec.matches(labels):
-            return spec.name
-    return "Unknown"
+# Reversed so the highest difficulty wins when a PR closes multiple issues.
+_DIFFICULTY_LEVELS_DESC = tuple(reversed(DIFFICULTY_LEVELS))
 
 
 def run() -> None:
@@ -44,7 +38,7 @@ def run() -> None:
     if df.empty:
         raise ValueError(f"No PR data found for {ORG_NAME}/{REPO}. Cannot perform churn analysis.")
 
-    df["level"] = df["issue_labels"].apply(lambda labels: get_contributor_level(set(labels or [])))
+    df["level"] = df["issue_labels"].apply(lambda labels: assign_difficulty(labels, _DIFFICULTY_LEVELS_DESC))
 
     df = df.dropna(subset=["author", "pr_merged_at"]).sort_values(["author", "pr_merged_at"])
 
@@ -133,9 +127,6 @@ def run() -> None:
     # New Visualization: Average Tenure by Max Level reached
     tenure_by_level = gfi_starters.groupby("max_level")["tenure_days"].mean().reset_index()
     tenure_by_level = tenure_by_level.rename(columns={"tenure_days": "avg_tenure_days"})
-    # Order by difficulty
-    from hiero_analytics.domain.labels import DIFFICULTY_ORDER
-
     tenure_by_level["max_level"] = pd.Categorical(
         tenure_by_level["max_level"], categories=DIFFICULTY_ORDER, ordered=True
     )
@@ -151,4 +142,5 @@ def run() -> None:
 
 
 if __name__ == "__main__":
+    setup_logging()
     run()

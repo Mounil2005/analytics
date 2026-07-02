@@ -18,7 +18,7 @@ def env_int(name: str, default: int, *, minimum: int | None = None) -> int:
     """
     try:
         value = int(os.getenv(name, default))
-    except TypeError, ValueError:
+    except (TypeError, ValueError):  # fmt: skip
         value = default
     return max(minimum, value) if minimum is not None else value
 
@@ -27,6 +27,6 @@ def env_float(name: str, default: float, *, minimum: float | None = None) -> flo
     """Read a float env var; fall back to ``default`` on missing/invalid input."""
     try:
         value = float(os.getenv(name, default))
-    except TypeError, ValueError:
+    except (TypeError, ValueError):  # fmt: skip
         value = default
     return max(minimum, value) if minimum is not None else value
