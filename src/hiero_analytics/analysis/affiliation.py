@@ -35,12 +35,26 @@ _UNKNOWN_VALUES = {"", "?", "unknown", "none"}
 DISTRIBUTION_COLUMNS = ["organisation", "maintainers"]
 CLASSIFIED_COLUMNS = ["login", "organisation", "status"]
 REPO_DIVERSITY_COLUMNS = [
-    "repo", "maintainers", "distinct_orgs", "top_org", "top_org_pct",
-    "independent", "unknown", "organisations",
+    "repo",
+    "maintainers",
+    "distinct_orgs",
+    "top_org",
+    "top_org_pct",
+    "independent",
+    "unknown",
+    "organisations",
 ]
 TEAM_DIVERSITY_COLUMNS = [
-    "team", "members", "resolved", "distinct_orgs", "top_org", "top_org_pct",
-    "hhi", "unknown", "single_employer", "organisations",
+    "team",
+    "members",
+    "resolved",
+    "distinct_orgs",
+    "top_org",
+    "top_org_pct",
+    "hhi",
+    "unknown",
+    "single_employer",
+    "organisations",
 ]
 
 
@@ -142,24 +156,14 @@ def summarize_affiliation(classified: pd.DataFrame) -> dict[str, object]:
     known = classified[classified["status"] != "unknown"]
     entities = [
         org if status == "affiliated" else f"independent:{login}"
-        for login, org, status in zip(
-            known["login"], known["organisation"], known["status"], strict=True
-        )
+        for login, org, status in zip(known["login"], known["organisation"], known["status"], strict=True)
     ]
     known_total = len(entities)
-    employer_counts = (
-        known[known["status"] == "affiliated"]["organisation"].value_counts()
-    )
+    employer_counts = known[known["status"] == "affiliated"]["organisation"].value_counts()
     entity_counts = Counter(entities)
-    hhi = (
-        round(10000 * sum((n / known_total) ** 2 for n in entity_counts.values()))
-        if known_total
-        else 0
-    )
+    hhi = round(10000 * sum((n / known_total) ** 2 for n in entity_counts.values())) if known_total else 0
     top_org = employer_counts.index[0] if not employer_counts.empty else None
-    top_share = (
-        round(100 * int(employer_counts.iloc[0]) / known_total) if known_total and top_org else 0
-    )
+    top_share = round(100 * int(employer_counts.iloc[0]) / known_total) if known_total and top_org else 0
 
     return {
         "maintainers": total,
@@ -281,16 +285,18 @@ def build_repo_affiliation_diversity(
         unknown = int((classified["status"] == "unknown").sum())
         top_org = employer_counts.index[0] if not employer_counts.empty else None
         top_pct = round(100 * int(employer_counts.iloc[0]) / len(logins)) if not employer_counts.empty else 0
-        rows.append({
-            "repo": repo,
-            "maintainers": len(logins),
-            "distinct_orgs": int(employer_counts.size),
-            "top_org": top_org,
-            "top_org_pct": top_pct,
-            "independent": independent,
-            "unknown": unknown,
-            "organisations": ", ".join(employer_counts.index.tolist()),
-        })
+        rows.append(
+            {
+                "repo": repo,
+                "maintainers": len(logins),
+                "distinct_orgs": int(employer_counts.size),
+                "top_org": top_org,
+                "top_org_pct": top_pct,
+                "independent": independent,
+                "unknown": unknown,
+                "organisations": ", ".join(employer_counts.index.tolist()),
+            }
+        )
 
     df = pd.DataFrame(rows, columns=REPO_DIVERSITY_COLUMNS)
     if df.empty:
@@ -327,10 +333,7 @@ def build_repo_org_composition(
         for login in logins:
             seat_totals[segment(login)] += 1
 
-    named = [
-        org for org, _ in seat_totals.most_common()
-        if org not in {INDEPENDENT, UNKNOWN_LABEL}
-    ]
+    named = [org for org, _ in seat_totals.most_common() if org not in {INDEPENDENT, UNKNOWN_LABEL}]
     kept = named[:top_n]
     has_other = len(named) > top_n
     # Stacking order: big employers first, then Other, Independent, and Unknown last.
@@ -411,19 +414,21 @@ def build_team_affiliation_diversity(
         mix = [f"{org} {int(n)}" for org, n in employer_counts.items()]
         if summary["independent"]:
             mix.append(f"Independent {int(summary['independent'])}")
-        rows.append({
-            "team": team,
-            "members": int(summary["maintainers"]),
-            "resolved": resolved,
-            "distinct_orgs": int(summary["distinct_orgs"]),
-            "top_org": summary["top_org"],
-            "top_org_pct": int(summary["top_share_pct"]),
-            "hhi": int(summary["hhi"]),
-            "unknown": int(summary["unknown"]),
-            # One employer holds every resolved seat (no independents) -> capture risk.
-            "single_employer": summary["distinct_orgs"] == 1 and resolved >= 2 and summary["independent"] == 0,
-            "organisations": ", ".join(mix),
-        })
+        rows.append(
+            {
+                "team": team,
+                "members": int(summary["maintainers"]),
+                "resolved": resolved,
+                "distinct_orgs": int(summary["distinct_orgs"]),
+                "top_org": summary["top_org"],
+                "top_org_pct": int(summary["top_share_pct"]),
+                "hhi": int(summary["hhi"]),
+                "unknown": int(summary["unknown"]),
+                # One employer holds every resolved seat (no independents) -> capture risk.
+                "single_employer": summary["distinct_orgs"] == 1 and resolved >= 2 and summary["independent"] == 0,
+                "organisations": ", ".join(mix),
+            }
+        )
 
     df = pd.DataFrame(rows, columns=TEAM_DIVERSITY_COLUMNS)
     if df.empty:
@@ -459,11 +464,7 @@ def build_single_employer_repo_counts(repo_diversity: pd.DataFrame) -> pd.DataFr
     if repo_diversity.empty:
         return pd.DataFrame(columns=cols)
     resolved = repo_diversity["maintainers"] - repo_diversity["unknown"]
-    single = (
-        (repo_diversity["distinct_orgs"] == 1)
-        & (repo_diversity["independent"] == 0)
-        & (resolved >= 2)
-    )
+    single = (repo_diversity["distinct_orgs"] == 1) & (repo_diversity["independent"] == 0) & (resolved >= 2)
     captured = repo_diversity[single]
     if captured.empty:
         return pd.DataFrame(columns=cols)
@@ -491,13 +492,12 @@ def build_team_org_composition(
     readable — the full set of teams lives in the diversity table). Returns
     ``(frame, segment_columns)``, teams ordered largest first.
     """
+
     def resolved_count(members: set[str]) -> int:
         return sum(1 for m in members if affiliations.get(m.lower()))
 
     groups = [
-        (team, set(members))
-        for team, members in team_membership.items()
-        if resolved_count(members) >= min_resolved
+        (team, set(members)) for team, members in team_membership.items() if resolved_count(members) >= min_resolved
     ]
     if not groups:
         return pd.DataFrame(columns=["team"]), []

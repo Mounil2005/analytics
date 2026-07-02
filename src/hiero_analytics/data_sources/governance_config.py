@@ -29,9 +29,8 @@ ROLE_PRIORITY = {
 # repo's role-holders would stamp the same handful of people onto all repos and
 # drown out domain-specific maintainership. Excluded from domain repos, but used as
 # a maintainer fallback for org/meta repos that have no domain maintainer team.
-BLANKET_TEAMS = frozenset(
-    {"github-maintainers", "security-maintainers", "lf-staff", "tsc", "hiero-triage"}
-)
+BLANKET_TEAMS = frozenset({"github-maintainers", "security-maintainers", "lf-staff", "tsc", "hiero-triage"})
+
 
 def _normalize_username(user: str) -> str:
     """Normalize GitHub logins for case-insensitive matching."""
@@ -95,9 +94,7 @@ def build_team_membership(config: dict[str, Any]) -> dict[str, set[str]]:
         for field in ("maintainers", "members"):
             values = team.get(field, [])
             if isinstance(values, list):
-                members.update(
-                    _normalize_username(user) for user in values if isinstance(user, str) and user
-                )
+                members.update(_normalize_username(user) for user in values if isinstance(user, str) and user)
         membership[name] = members
     return membership
 

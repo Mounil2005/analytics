@@ -65,11 +65,7 @@ class RateLimitSnapshot:
         except (TypeError, ValueError):  # fmt: skip
             return None
 
-        reset_at = (
-            datetime.fromtimestamp(reset_epoch, tz=UTC)
-            if reset_epoch is not None
-            else None
-        )
+        reset_at = datetime.fromtimestamp(reset_epoch, tz=UTC) if reset_epoch is not None else None
 
         return cls(remaining=remaining, limit=limit, reset_at=reset_at)
 

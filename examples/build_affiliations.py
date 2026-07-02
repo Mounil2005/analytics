@@ -57,54 +57,105 @@ HEADERS = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github
 
 # --- entity maps (each a distinct entity; Swirlds Labs folded into Hashgraph) ---
 EMAIL_DOMAIN = {
-    "swirldslabs.com": "Hashgraph", "swirlds.com": "Hashgraph", "hashgraph.com": "Hashgraph",
-    "hedera.com": "Hedera", "hgraph.com": "Hgraph", "limechain.tech": "LimeChain",
-    "limehcain.tech": "LimeChain", "openelements.com": "OpenElements",
-    "open-elements.com": "OpenElements", "dsr-corporation.com": "DSR Corporation",
-    "linuxfoundation.org": "Linux Foundation", "blockydevs.com": "BlockyDevs",
+    "swirldslabs.com": "Hashgraph",
+    "swirlds.com": "Hashgraph",
+    "hashgraph.com": "Hashgraph",
+    "hedera.com": "Hedera",
+    "hgraph.com": "Hgraph",
+    "limechain.tech": "LimeChain",
+    "limehcain.tech": "LimeChain",
+    "openelements.com": "OpenElements",
+    "open-elements.com": "OpenElements",
+    "dsr-corporation.com": "DSR Corporation",
+    "linuxfoundation.org": "Linux Foundation",
+    "blockydevs.com": "BlockyDevs",
     "launchbadge.com": "Launchbadge",
 }
 COMPANY_FULL = {
     # 'Hedera Hashgraph LLC' is the old unified company name (ancestor of both the
     # Hashgraph engineering company and the Hedera network entity); on its own it
     # means the Hedera side. Actual Hashgraph staff resolve via their work email.
-    "hedera hashgraph llc": "Hedera", "hedera hashgraph": "Hedera", "swirlds labs": "Hashgraph",
+    "hedera hashgraph llc": "Hedera",
+    "hedera hashgraph": "Hedera",
+    "swirlds labs": "Hashgraph",
     "the hashgraph association (tha)": "The Hashgraph Association",
-    "the hashgraph association": "The Hashgraph Association", "hashgraph-association": "The Hashgraph Association",
-    "the linux foundation": "Linux Foundation", "linux foundation": "Linux Foundation",
-    "dsr corporation": "DSR Corporation", "open elements gmbh": "OpenElements",
-    "turtle moon llc": "Turtle Moon", "jitty labs": "Jitty Labs", "guy who builds for fun": None,
+    "the hashgraph association": "The Hashgraph Association",
+    "hashgraph-association": "The Hashgraph Association",
+    "the linux foundation": "Linux Foundation",
+    "linux foundation": "Linux Foundation",
+    "dsr corporation": "DSR Corporation",
+    "open elements gmbh": "OpenElements",
+    "turtle moon llc": "Turtle Moon",
+    "jitty labs": "Jitty Labs",
+    "guy who builds for fun": None,
 }
 COMPANY_TOKEN = {
-    "hashgraph": "Hashgraph", "swirlds": "Hashgraph", "swirldslabs": "Hashgraph", "hgraph": "Hgraph",
-    "hedera": "Hedera", "openelements": "OpenElements", "limechain": "LimeChain",
-    "linuxfoundation": "Linux Foundation", "launchbadge": "Launchbadge", "blockydevs": "BlockyDevs",
+    "hashgraph": "Hashgraph",
+    "swirlds": "Hashgraph",
+    "swirldslabs": "Hashgraph",
+    "hgraph": "Hgraph",
+    "hedera": "Hedera",
+    "openelements": "OpenElements",
+    "limechain": "LimeChain",
+    "linuxfoundation": "Linux Foundation",
+    "launchbadge": "Launchbadge",
+    "blockydevs": "BlockyDevs",
     "dsr": "DSR Corporation",
 }
 EMPLOYER_ORG = {
-    "hashgraph": "Hashgraph", "swirldslabs": "Hashgraph", "swirlds": "Hashgraph",
-    "openelements": "OpenElements", "hashgraph-association": "The Hashgraph Association",
+    "hashgraph": "Hashgraph",
+    "swirldslabs": "Hashgraph",
+    "swirlds": "Hashgraph",
+    "openelements": "OpenElements",
+    "hashgraph-association": "The Hashgraph Association",
     "limechain": "LimeChain",
 }
 SMALL_ORG_NAME = {
-    "devlabs.bg": "DevLabs", "goodmorning.dev": "DevLabs", "onepiece.software": "Onepiece Software",
-    "gradle.com": "Gradle", "8bees.fr": "8bees", "capsule03.com": "Capsule03", "sydor.dev": "Sydor",
-    "labeltech.io": "LabelTech", "jcovalent.com": "JCovalent", "servercurio.com": "ServerCurio",
-    "zkbricks.com": "zkBricks", "retrove.io": "Retrove", "pandaswhocode.com": "Pandas Who Code",
+    "devlabs.bg": "DevLabs",
+    "goodmorning.dev": "DevLabs",
+    "onepiece.software": "Onepiece Software",
+    "gradle.com": "Gradle",
+    "8bees.fr": "8bees",
+    "capsule03.com": "Capsule03",
+    "sydor.dev": "Sydor",
+    "labeltech.io": "LabelTech",
+    "jcovalent.com": "JCovalent",
+    "servercurio.com": "ServerCurio",
+    "zkbricks.com": "zkBricks",
+    "retrove.io": "Retrove",
+    "pandaswhocode.com": "Pandas Who Code",
 }
 SMALL_ORG_FROM_COMPANY = {"hol": "Hashgraph Online"}
 SMALL_ORG_FROM_ORG = {"hashgraph-online": "Hashgraph Online"}
 _MD_COMPANY = {
-    "hashpack": "HashPack", "onepiece": "Onepiece Software", "8bees": "8bees",
-    "capsule03": "Capsule03", "turtlemoon": "Turtle Moon", "hol": "Hashgraph Online",
+    "hashpack": "HashPack",
+    "onepiece": "Onepiece Software",
+    "8bees": "8bees",
+    "capsule03": "Capsule03",
+    "turtlemoon": "Turtle Moon",
+    "hol": "Hashgraph Online",
 }
 _MD_COMPANY_FULL = {
-    "hashgraph online": "Hashgraph Online", "open elements": "OpenElements",
-    "hedera foundation": "Hedera", "turtle moon": "Turtle Moon", "milanwr.com (8bees)": "8bees",
+    "hashgraph online": "Hashgraph Online",
+    "open elements": "OpenElements",
+    "hedera foundation": "Hedera",
+    "turtle moon": "Turtle Moon",
+    "milanwr.com (8bees)": "8bees",
 }
 _PERSONAL = {
-    "gmail.com", NOREPLY, "outlook.com", "hotmail.com", "icloud.com", "proton.me", "protonmail.com",
-    "web.de", "yahoo.com", "qq.com", "abv.bg", "pacbell.net", "news.co.uk",
+    "gmail.com",
+    NOREPLY,
+    "outlook.com",
+    "hotmail.com",
+    "icloud.com",
+    "proton.me",
+    "protonmail.com",
+    "web.de",
+    "yahoo.com",
+    "qq.com",
+    "abv.bg",
+    "pacbell.net",
+    "news.co.uk",
 }
 _MD_SKIP = {"", "-", "n/a", "none", "tbd"}
 _MD_LINK = re.compile(r"\[([^\]]+)\]\([^)]*\)")
@@ -159,11 +210,41 @@ def org_from_email(raw: str) -> str | None:
 
 # Company-field values that aren't an employer (so they don't become a named org).
 _COMPANY_JUNK = {
-    "", "-", "n/a", "none", "self", "self employed", "self-employed", "freelance", "freelancer",
-    "freelancing", "independent", "me", "myself", "open source", "opensource", "various", "remote",
-    "home", "world", "earth", "internet", "the internet", "student", "unemployed", "looking",
-    "open to work", "none of your business", "stealth mode startup", "stealth", "stealth startup",
-    "blog", "live", "crypto", "web3", "blockchain",
+    "",
+    "-",
+    "n/a",
+    "none",
+    "self",
+    "self employed",
+    "self-employed",
+    "freelance",
+    "freelancer",
+    "freelancing",
+    "independent",
+    "me",
+    "myself",
+    "open source",
+    "opensource",
+    "various",
+    "remote",
+    "home",
+    "world",
+    "earth",
+    "internet",
+    "the internet",
+    "student",
+    "unemployed",
+    "looking",
+    "open to work",
+    "none of your business",
+    "stealth mode startup",
+    "stealth",
+    "stealth startup",
+    "blog",
+    "live",
+    "crypto",
+    "web3",
+    "blockchain",
 }
 _COMPANY_NOT_EMPLOYER = {"hiero-ledger", "hiero-hackers", "hiero", "lf-decentralized-trust"}
 
@@ -224,7 +305,7 @@ def load_manual_overrides(path) -> dict[str, tuple[str, str]]:
             continue
         login, _, value = body.partition(":")
         keyword = re.search(r"(?i)\bmanual\b\s*[:\-—·]?\s*", comment)
-        reason = comment[keyword.end():] if keyword else ""
+        reason = comment[keyword.end() :] if keyword else ""
         reason = re.sub(r"\s*\(resolver:.*\)\s*$", "", reason).strip()
         overrides[login.strip().lower()] = (value.strip().strip('"').strip(), reason)
     return overrides
@@ -277,12 +358,15 @@ def gpg_uid_emails(login: str) -> list[str]:
     try:
         out = subprocess.run(
             ["gpg", "--show-keys", "--with-colons"],
-            input=resp.text, capture_output=True, text=True, timeout=15, check=False,
+            input=resp.text,
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
         ).stdout
-    except (OSError, subprocess.SubprocessError):
+    except OSError, subprocess.SubprocessError:
         return []
-    found = {m.group(1).lower() for row in out.splitlines()
-             if row.startswith("uid:") and (m := EMAIL_RE.search(row))}
+    found = {m.group(1).lower() for row in out.splitlines() if row.startswith("uid:") and (m := EMAIL_RE.search(row))}
     return sorted(found)
 
 
@@ -317,8 +401,9 @@ def parse_maintainers_md(md: str):
         if cols is None or set("".join(cells)) <= set("-: "):
             continue
         gi = next((i for i, c in enumerate(cols) if "github" in c), None)
-        ci = next((i for i, c in enumerate(cols)
-                   if any(k in c for k in ("company", "affiliation", "organization"))), None)
+        ci = next(
+            (i for i, c in enumerate(cols) if any(k in c for k in ("company", "affiliation", "organization"))), None
+        )
         if gi is None or gi >= len(cells):
             continue
         gid = _MD_LINK.sub(r"\1", cells[gi]).strip().strip("@ ").lower()
@@ -333,8 +418,9 @@ def fetch_maintainers_affiliations() -> dict[str, str]:
     for org in ORGS:
         page, repos = 1, []
         while True:
-            resp = get(f"https://api.github.com/orgs/{org}/repos",
-                       params={"per_page": 100, "page": page, "type": "public"})
+            resp = get(
+                f"https://api.github.com/orgs/{org}/repos", params={"per_page": 100, "page": page, "type": "public"}
+            )
             if not resp or not resp.json():
                 break
             repos += [x["name"] for x in resp.json()]
@@ -363,8 +449,7 @@ def commit_author_org(login: str) -> str | None:
     """
     counts: Counter[str] = Counter()
     for org in ORGS:
-        resp = get("https://api.github.com/search/commits",
-                   params={"q": f"author:{login} org:{org}", "per_page": 30})
+        resp = get("https://api.github.com/search/commits", params={"q": f"author:{login} org:{org}", "per_page": 30})
         if not resp:
             continue
         for item in resp.json().get("items", []):
@@ -426,6 +511,7 @@ def main() -> None:
 
     # Profile fields in batches via GraphQL.
     from hiero_analytics.data_sources.github_client import GitHubClient
+
     client = GitHubClient()
     rows = []
     for i in range(0, len(people), 20):
@@ -438,14 +524,16 @@ def main() -> None:
         payload = (client.graphql("query {\n" + "\n".join(parts) + "\n}", {}).get("data")) or {}
         for j, login in enumerate(batch):
             node = payload.get(f"u{j}") or {}
-            rows.append({
-                "login": login,
-                "name": (node.get("name") or "").strip(),
-                "company": (node.get("company") or "").strip(),
-                "email": (node.get("email") or "").strip(),
-                "bio": (node.get("bio") or "").strip(),
-                "orgs": [o["login"] for o in (node.get("organizations", {}) or {}).get("nodes") or []],
-            })
+            rows.append(
+                {
+                    "login": login,
+                    "name": (node.get("name") or "").strip(),
+                    "company": (node.get("company") or "").strip(),
+                    "email": (node.get("email") or "").strip(),
+                    "bio": (node.get("bio") or "").strip(),
+                    "orgs": [o["login"] for o in (node.get("organizations", {}) or {}).get("nodes") or []],
+                }
+            )
 
     for r in rows:
         gpg_emails = gpg_uid_emails(r["login"])
@@ -489,16 +577,34 @@ def main() -> None:
         else:
             status = "unknown"
 
-        signals = {"gpg": g, "email": e, "maintainers_md": md, "company": c, "bio": bio,
-                   "org": o, "small": small, "commit": commit_org}
+        signals = {
+            "gpg": g,
+            "email": e,
+            "maintainers_md": md,
+            "company": c,
+            "bio": bio,
+            "org": o,
+            "small": small,
+            "commit": commit_org,
+        }
         present = {k: v for k, v in signals.items() if v}
         agree = sum(1 for v in present.values() if v == resolved)
-        r.update({
-            "status": status, "resolved": resolved, "sources": sorted(present),
-            "confidence": "verified" if agree >= 2 else ("single" if resolved else status),
-            "gpg_org": g, "email_org": e, "maintainers_md_org": md, "company_org": c,
-            "bio_org": bio, "org_membership_org": o, "small_org": small, "commit_email_org": commit_org,
-        })
+        r.update(
+            {
+                "status": status,
+                "resolved": resolved,
+                "sources": sorted(present),
+                "confidence": "verified" if agree >= 2 else ("single" if resolved else status),
+                "gpg_org": g,
+                "email_org": e,
+                "maintainers_md_org": md,
+                "company_org": c,
+                "bio_org": bio,
+                "org_membership_org": o,
+                "small_org": small,
+                "commit_email_org": commit_org,
+            }
+        )
         if g and resolved == g:
             r["decided_by"] = "gpg-key email"
         elif e and resolved == e:
@@ -540,8 +646,10 @@ def main() -> None:
             r["decided_by"] = "manual override"
 
     by_status = Counter(r["status"] for r in rows)
-    print(f"affiliated {by_status['affiliated']}, independent {by_status['independent']}, "
-          f"unknown {by_status['unknown']} of {len(rows)}")
+    print(
+        f"affiliated {by_status['affiliated']}, independent {by_status['independent']}, "
+        f"unknown {by_status['unknown']} of {len(rows)}"
+    )
 
     # Curated YAML (source of truth), keyed by login with the name as a comment.
     header = (
@@ -586,23 +694,54 @@ def main() -> None:
     audit_path = audit_dir / "maintainer_affiliation_audit.csv"
     with audit_path.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow([
-            "login", "name", "status", "affiliation", "decided_by", "confidence", "agreeing_signals",
-            "gpg_emails", "gpg_org", "profile_email", "email_org", "maintainers_md_org",
-            "company", "company_org", "bio_org", "public_orgs", "org_membership_org",
-            "small_org_guess", "commit_email_org", "linkedin",
-        ])
+        w.writerow(
+            [
+                "login",
+                "name",
+                "status",
+                "affiliation",
+                "decided_by",
+                "confidence",
+                "agreeing_signals",
+                "gpg_emails",
+                "gpg_org",
+                "profile_email",
+                "email_org",
+                "maintainers_md_org",
+                "company",
+                "company_org",
+                "bio_org",
+                "public_orgs",
+                "org_membership_org",
+                "small_org_guess",
+                "commit_email_org",
+                "linkedin",
+            ]
+        )
         for r in sorted(rows, key=lambda x: (x["status"], (x["resolved"] or "~"), x["login"].lower())):
             affiliation = r["resolved"] or ("Independent" if r["status"] == "independent" else "?")
             row = [
-                r["login"], r["name"], r["status"], affiliation, r["decided_by"], r["confidence"],
+                r["login"],
+                r["name"],
+                r["status"],
+                affiliation,
+                r["decided_by"],
+                r["confidence"],
                 ";".join(r["sources"]) or "-",
                 # Emails are redacted to their domain only — never the full address.
-                ";".join(email_domain(e) for e in r["gpg_emails"]) or "-", r["gpg_org"] or "-",
-                email_domain(r["email"]) or "-", r["email_org"] or "-", r["maintainers_md_org"] or "-",
-                r["company"] or "-", r["company_org"] or "-", r["bio_org"] or "-",
-                ";".join(r["orgs"]) or "-", r["org_membership_org"] or "-", r["small_org"] or "-",
-                r["commit_email_org"] or "-", r["linkedin"] or "-",
+                ";".join(email_domain(e) for e in r["gpg_emails"]) or "-",
+                r["gpg_org"] or "-",
+                email_domain(r["email"]) or "-",
+                r["email_org"] or "-",
+                r["maintainers_md_org"] or "-",
+                r["company"] or "-",
+                r["company_org"] or "-",
+                r["bio_org"] or "-",
+                ";".join(r["orgs"]) or "-",
+                r["org_membership_org"] or "-",
+                r["small_org"] or "-",
+                r["commit_email_org"] or "-",
+                r["linkedin"] or "-",
             ]
             # Neutralise spreadsheet formula injection from attacker-controlled GitHub fields.
             w.writerow([csv_safe(cell) for cell in row])

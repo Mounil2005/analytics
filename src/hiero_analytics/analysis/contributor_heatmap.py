@@ -115,9 +115,7 @@ def build_activity_heatmap_dataframe(
     month_columns = _recent_month_keys(months_back)
     window = set(month_columns)
     windowed = [
-        record
-        for record in records
-        if record.occurred_at is not None and _month_key(record.occurred_at) in window
+        record for record in records if record.occurred_at is not None and _month_key(record.occurred_at) in window
     ]
     rollup = _build_activity_rollup(windowed, repo_role_lookup)
 
@@ -173,9 +171,7 @@ def build_team_activity_heatmap(
     if contributor_heatmap.empty:
         return pd.DataFrame(columns=columns)
 
-    by_login = {
-        str(row["contributor name"]).lower(): row for row in contributor_heatmap.to_dict("records")
-    }
+    by_login = {str(row["contributor name"]).lower(): row for row in contributor_heatmap.to_dict("records")}
     rows: list[dict[str, object]] = []
     for team, members in team_membership.items():
         monthly = dict.fromkeys(month_columns, 0)
@@ -204,9 +200,7 @@ def build_repo_activity_heatmap(records, *, months_back: int = HEATMAP_MONTHS) -
     """
     month_columns = _recent_month_keys(months_back)
     window = set(month_columns)
-    per_repo: dict[str, dict[str, int]] = defaultdict(
-        lambda: {"activity score": 0, **dict.fromkeys(month_columns, 0)}
-    )
+    per_repo: dict[str, dict[str, int]] = defaultdict(lambda: {"activity score": 0, **dict.fromkeys(month_columns, 0)})
     for record in records:
         actor = (record.actor or "").strip()
         action = _activity_action(record.activity_type)

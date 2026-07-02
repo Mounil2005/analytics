@@ -16,16 +16,43 @@ def test_repo_activity_overview_rolls_up_by_role():
     coverage_all = pd.DataFrame(
         [
             # repo A: a busy maintainer + a quiet committer
-            {"repo": "o/a", "granted_role": "maintainer", "status": "active", "total_actions": 50,
-             "prs_recent": 3, "reviews_recent": 5, "merges_recent": 2, "issues_recent": 0, "labels_recent": 0,
-             "last_active": "2026-06-20"},
-            {"repo": "o/a", "granted_role": "committer", "status": "quiet", "total_actions": 4,
-             "prs_recent": 0, "reviews_recent": 0, "merges_recent": 0, "issues_recent": 0, "labels_recent": 0,
-             "last_active": "2026-01-01"},
+            {
+                "repo": "o/a",
+                "granted_role": "maintainer",
+                "status": "active",
+                "total_actions": 50,
+                "prs_recent": 3,
+                "reviews_recent": 5,
+                "merges_recent": 2,
+                "issues_recent": 0,
+                "labels_recent": 0,
+                "last_active": "2026-06-20",
+            },
+            {
+                "repo": "o/a",
+                "granted_role": "committer",
+                "status": "quiet",
+                "total_actions": 4,
+                "prs_recent": 0,
+                "reviews_recent": 0,
+                "merges_recent": 0,
+                "issues_recent": 0,
+                "labels_recent": 0,
+                "last_active": "2026-01-01",
+            },
             # repo B: one triage holder, lightly active
-            {"repo": "o/b", "granted_role": "triage", "status": "active", "total_actions": 2,
-             "prs_recent": 1, "reviews_recent": 0, "merges_recent": 0, "issues_recent": 0, "labels_recent": 0,
-             "last_active": "2026-06-10"},
+            {
+                "repo": "o/b",
+                "granted_role": "triage",
+                "status": "active",
+                "total_actions": 2,
+                "prs_recent": 1,
+                "reviews_recent": 0,
+                "merges_recent": 0,
+                "issues_recent": 0,
+                "labels_recent": 0,
+                "last_active": "2026-06-10",
+            },
         ]
     )
     overview = build_repo_activity_overview(coverage_all)
@@ -75,8 +102,12 @@ def test_review_load_share_includes_committers_and_computes_concentration():
 
     def row(repo, user, role, reviews, merges):
         return {
-            "repo": repo, "user": user, "granted_role": role, "status": "active",
-            "reviews_recent": reviews, "merges_recent": merges,
+            "repo": repo,
+            "user": user,
+            "granted_role": role,
+            "status": "active",
+            "reviews_recent": reviews,
+            "merges_recent": merges,
         }
 
     coverage = pd.DataFrame(

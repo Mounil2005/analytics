@@ -71,4 +71,3 @@ def test_team_by_repo_shows_where_a_team_is_active():
     team_ab = table[table["team"] == "team-ab"]
     assert set(team_ab["repo"]) == {"o/x", "o/y"}  # active in both
     assert "team-ghost" not in set(table["team"])  # no activity -> absent
-

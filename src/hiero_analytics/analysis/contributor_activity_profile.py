@@ -84,19 +84,21 @@ def contributor_activity_to_dataframe(
     """
     return records_to_dataframe(
         records,
-        lambda r: None
-        if not r.actor or is_bot_login(r.actor)
-        else {
-            "contributor": r.actor,
-            "activity_type": r.activity_type,
-            "family": ACTIVITY_FAMILY.get(r.activity_type, "other"),
-            "repo": r.repo,
-            "target_author": r.target_author,
-            "review_state": r.detail,
-            "occurred_at": r.occurred_at,
-            "target_number": r.target_number,
-            "month": r.occurred_at.strftime("%Y-%m") if r.occurred_at else None,
-        },
+        lambda r: (
+            None
+            if not r.actor or is_bot_login(r.actor)
+            else {
+                "contributor": r.actor,
+                "activity_type": r.activity_type,
+                "family": ACTIVITY_FAMILY.get(r.activity_type, "other"),
+                "repo": r.repo,
+                "target_author": r.target_author,
+                "review_state": r.detail,
+                "occurred_at": r.occurred_at,
+                "target_number": r.target_number,
+                "month": r.occurred_at.strftime("%Y-%m") if r.occurred_at else None,
+            }
+        ),
         _EVENT_COLUMNS,
     )
 
@@ -114,19 +116,21 @@ def label_events_to_dataframe(
     """
     return records_to_dataframe(
         label_events,
-        lambda e: None
-        if not e.actor or e.event_type != "labeled" or is_bot_login(e.actor)
-        else {
-            "contributor": e.actor,
-            "activity_type": "labeled_issue",
-            "family": "organizing_and_answering",
-            "repo": e.repo,
-            "target_author": None,
-            "review_state": None,
-            "occurred_at": e.occurred_at,
-            "target_number": e.issue_number,
-            "month": e.occurred_at.strftime("%Y-%m") if e.occurred_at else None,
-        },
+        lambda e: (
+            None
+            if not e.actor or e.event_type != "labeled" or is_bot_login(e.actor)
+            else {
+                "contributor": e.actor,
+                "activity_type": "labeled_issue",
+                "family": "organizing_and_answering",
+                "repo": e.repo,
+                "target_author": None,
+                "review_state": None,
+                "occurred_at": e.occurred_at,
+                "target_number": e.issue_number,
+                "month": e.occurred_at.strftime("%Y-%m") if e.occurred_at else None,
+            }
+        ),
         _EVENT_COLUMNS,
     )
 
@@ -244,9 +248,7 @@ def _profiles_from_events(events: pd.DataFrame, *, newcomer_max_prs: int) -> pd.
         )
 
     return (
-        pd.DataFrame(rows, columns=_PROFILE_COLUMNS)
-        .sort_values("last_active", ascending=False)
-        .reset_index(drop=True)
+        pd.DataFrame(rows, columns=_PROFILE_COLUMNS).sort_values("last_active", ascending=False).reset_index(drop=True)
     )
 
 
@@ -265,8 +267,7 @@ def build_contributor_profiles_by_repo(
     """
     events = combined_activity_events(records, label_events)
     return {
-        repo: _profiles_from_events(group, newcomer_max_prs=newcomer_max_prs)
-        for repo, group in events.groupby("repo")
+        repo: _profiles_from_events(group, newcomer_max_prs=newcomer_max_prs) for repo, group in events.groupby("repo")
     }
 
 
@@ -290,8 +291,7 @@ def build_active_membership(
             continue
         recent = recent_by_repo.get(repo_full)
         recent_users = (
-            set(recent["contributor"].astype(str).str.lower())
-            if recent is not None and not recent.empty else set()
+            set(recent["contributor"].astype(str).str.lower()) if recent is not None and not recent.empty else set()
         )
         for contributor in profiles["contributor"]:
             login = str(contributor).lower()
@@ -330,14 +330,8 @@ def build_account_activity_by_repo(
         return pd.DataFrame(columns=columns)
 
     out = pd.concat(frames, ignore_index=True).rename(columns={"contributor": "account"})
-    out["_total"] = (
-        out["building_and_fixing"] + out["reviewing_and_guiding"] + out["organizing_and_answering"]
-    )
-    return (
-        out.sort_values(["account", "_total"], ascending=[True, False])
-        .drop(columns="_total")
-        .reset_index(drop=True)
-    )
+    out["_total"] = out["building_and_fixing"] + out["reviewing_and_guiding"] + out["organizing_and_answering"]
+    return out.sort_values(["account", "_total"], ascending=[True, False]).drop(columns="_total").reset_index(drop=True)
 
 
 def latest_activity_by_account(

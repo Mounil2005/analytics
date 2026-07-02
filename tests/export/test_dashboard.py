@@ -122,12 +122,14 @@ def test_chart_note_and_methodology_only_appear_in_zoom_view():
             "id": "ch",
             "title": "Charts",
             "description": "pictures",
-            "charts": [{
-                "title": "Yearly",
-                "src": "data:image/png;base64,AAAA",
-                "note": "How to read this chart.",
-                "methodology": ["First do this.", "Then do that."],
-            }],
+            "charts": [
+                {
+                    "title": "Yearly",
+                    "src": "data:image/png;base64,AAAA",
+                    "note": "How to read this chart.",
+                    "methodology": ["First do this.", "Then do that."],
+                }
+            ],
         }
     ]
     doc = build_dashboard_html([_macro([_tab("hiero-ledger", sections, metrics=())], "Community")])

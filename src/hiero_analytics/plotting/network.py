@@ -26,7 +26,7 @@ _OTHER_COLOR = REPO_CATEGORY_COLORS["Other"]
 
 def _short(repo: str) -> str:
     """Shorten a repo name for labelling by dropping the common ``hiero-`` prefix."""
-    return repo[len("hiero-"):] if repo.startswith("hiero-") else repo
+    return repo[len("hiero-") :] if repo.startswith("hiero-") else repo
 
 
 def _packed_layout(graph: nx.Graph, seed: int) -> tuple[dict, list]:
@@ -121,15 +121,22 @@ def render_comembership_network(
             row, col = divmod(i, cols)
             pos[node] = (x_centre - row_width / 2 + col * gap, top - row * gap)
         ax.text(
-            x_centre, top + gap * 0.8, f"not linked — no shared {member_label}",
-            ha="center", va="bottom", fontsize=9, color=MUTED_TEXT_COLOR,
+            x_centre,
+            top + gap * 0.8,
+            f"not linked — no shared {member_label}",
+            ha="center",
+            va="bottom",
+            fontsize=9,
+            color=MUTED_TEXT_COLOR,
         )
 
     if graph.number_of_edges():
         weights = [graph[u][v]["weight"] for u, v in graph.edges()]
         max_w = max(weights)
         nx.draw_networkx_edges(
-            graph, pos, ax=ax,
+            graph,
+            pos,
+            ax=ax,
             width=[0.4 + 2.6 * (w / max_w) for w in weights],
             edge_color="#9AA8B8",
             alpha=0.35,
@@ -138,7 +145,9 @@ def render_comembership_network(
     # Area encodes active members but compressed (sqrt) so big bubbles don't swamp.
     actives = [graph.nodes[node]["active"] for node in graph.nodes()]
     nx.draw_networkx_nodes(
-        graph, pos, ax=ax,
+        graph,
+        pos,
+        ax=ax,
         node_size=[140 + 260 * math.sqrt(a) for a in actives],
         node_color=node_colors,
         edgecolors="white",
@@ -146,9 +155,12 @@ def render_comembership_network(
         alpha=0.92,
     )
     nx.draw_networkx_labels(
-        graph, pos, ax=ax,
+        graph,
+        pos,
+        ax=ax,
         labels={node: _short(node) for node in graph.nodes()},
-        font_size=7, font_color=TITLE_COLOR,
+        font_size=7,
+        font_color=TITLE_COLOR,
         bbox={"boxstyle": "round,pad=0.12", "fc": "white", "ec": "none", "alpha": 0.7},
     )
 
@@ -157,16 +169,28 @@ def render_comembership_network(
     present = [c for c in CATEGORY_ORDER if c in set(categories.values())]
     handles = [Patch(facecolor=REPO_CATEGORY_COLORS[c], edgecolor="white", label=c) for c in present]
     legend = ax.legend(
-        handles=handles, title="Repository type", loc="upper left", bbox_to_anchor=(1.01, 1.0),
-        frameon=True, fontsize=9, title_fontsize=10, borderpad=0.8, labelspacing=0.5,
+        handles=handles,
+        title="Repository type",
+        loc="upper left",
+        bbox_to_anchor=(1.01, 1.0),
+        frameon=True,
+        fontsize=9,
+        title_fontsize=10,
+        borderpad=0.8,
+        labelspacing=0.5,
     )
     legend.get_frame().set_alpha(0.9)
 
     ax.set_title(title)
     ax.text(
-        0.5, -0.02,
+        0.5,
+        -0.02,
         f"Bubble size = active {member_label} · link width = shared {member_label} · colour = repository type",
-        transform=ax.transAxes, ha="center", va="top", fontsize=10, color=MUTED_TEXT_COLOR,
+        transform=ax.transAxes,
+        ha="center",
+        va="top",
+        fontsize=10,
+        color=MUTED_TEXT_COLOR,
     )
     ax.axis("off")
     fig.tight_layout()

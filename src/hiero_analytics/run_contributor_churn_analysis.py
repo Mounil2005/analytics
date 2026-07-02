@@ -1,15 +1,15 @@
+"""Runner: contributor churn and progression analysis for a single repository."""
+
 import os
-from datetime import datetime
+
 import pandas as pd
+
+from hiero_analytics.analysis.contributor_churn import compute_progression_stats, compute_transition_metrics
+from hiero_analytics.analysis.prs import prs_to_dataframe
 from hiero_analytics.config.logging import setup_logging
 from hiero_analytics.config.paths import ORG, ensure_repo_dirs
 from hiero_analytics.data_sources.github_client import GitHubClient
 from hiero_analytics.data_sources.github_ingest import fetch_repo_merged_pr_difficulty_graphql
-from hiero_analytics.analysis.prs import prs_to_dataframe
-from hiero_analytics.analysis.contributor_churn import (
-    compute_progression_stats, 
-    compute_transition_metrics
-)
 from hiero_analytics.domain.labels import DIFFICULTY_LEVELS
 from hiero_analytics.plotting.bars import plot_bar
 from hiero_analytics.plotting.lines import plot_line
@@ -20,43 +20,41 @@ ORG_NAME = ORG
 REPO = "hiero-sdk-python"
 short_repo = REPO.split("/")[-1]
 
+
 def get_contributor_level(labels: set[str]) -> str:
     """Classify PR difficulty level based on labels."""
-    for spec in reversed(DIFFICULTY_LEVELS): # advanced, intermediate, beginner, gfi
+    for spec in reversed(DIFFICULTY_LEVELS):  # advanced, intermediate, beginner, gfi
         if spec.matches(labels):
             return spec.name
     return "Unknown"
 
-def run():
+
+def run() -> None:
+    """Fetch PR data, compute contributor churn metrics, and write charts to disk."""
     repo_data_dir, repo_charts_dir = ensure_repo_dirs(f"{ORG_NAME}/{REPO}")
 
     if not os.getenv("GITHUB_TOKEN"):
-        raise EnvironmentError("GITHUB_TOKEN not set. Real data is required for churn analysis.")
-    
+        raise OSError("GITHUB_TOKEN not set. Real data is required for churn analysis.")
+
     client = GitHubClient()
     print(f"Fetching PR data for {ORG_NAME}/{REPO}...")
-    prs = fetch_repo_merged_pr_difficulty_graphql(
-        client,
-        owner=ORG_NAME,
-        repo=REPO,
-        use_cache=True
-    )
-    
+    prs = fetch_repo_merged_pr_difficulty_graphql(client, owner=ORG_NAME, repo=REPO, use_cache=True)
+
     df = prs_to_dataframe(prs)
     if df.empty:
         raise ValueError(f"No PR data found for {ORG_NAME}/{REPO}. Cannot perform churn analysis.")
-    
+
     df["level"] = df["issue_labels"].apply(lambda labels: get_contributor_level(set(labels or [])))
-    
+
     df = df.dropna(subset=["author", "pr_merged_at"]).sort_values(["author", "pr_merged_at"])
-    
+
     # Core analysis logic moved to hiero_analytics.analysis.contributor_churn
     progression = compute_progression_stats(df)
-    
+
     # Filter to GFI starters
     gfi_starters = progression[progression["start_level"] == "Good First Issue"].copy()
     total_gfi = len(gfi_starters)
-    
+
     if total_gfi == 0:
         print("No GFI starters found.")
         return
@@ -65,17 +63,19 @@ def run():
     reached_beginner = len(gfi_starters[gfi_starters["max_level"].isin(["Beginner", "Intermediate", "Advanced"])])
     reached_intermediate = len(gfi_starters[gfi_starters["max_level"].isin(["Intermediate", "Advanced"])])
     reached_advanced = len(gfi_starters[gfi_starters["max_level"] == "Advanced"])
-    
-    funnel_df = pd.DataFrame([
-        {"stage": "GFI Starters", "count": total_gfi},
-        {"stage": "Progressed to Beginner+", "count": reached_beginner},
-        {"stage": "Progressed to Intermediate+", "count": reached_intermediate},
-        {"stage": "Progressed to Advanced", "count": reached_advanced},
-    ])
+
+    funnel_df = pd.DataFrame(
+        [
+            {"stage": "GFI Starters", "count": total_gfi},
+            {"stage": "Progressed to Beginner+", "count": reached_beginner},
+            {"stage": "Progressed to Intermediate+", "count": reached_intermediate},
+            {"stage": "Progressed to Advanced", "count": reached_advanced},
+        ]
+    )
 
     print("\n--- Contributor Churn Analysis ---")
     for _, row in funnel_df.iterrows():
-        print(f"{row['stage']}: {row['count']} ({row['count']/total_gfi*100:.1f}%)")
+        print(f"{row['stage']}: {row['count']} ({row['count'] / total_gfi * 100:.1f}%)")
 
     # Transition Metrics (only for GFI starters to match funnel)
     print("\n--- Level Transition Metrics (GFI Starters only) ---")
@@ -98,25 +98,24 @@ def run():
         x_col="stage",
         y_col="count",
         title=f"{short_repo}: Contributor Progression Funnel",
-        output_path=repo_charts_dir / "contributor_churn_funnel.png"
+        output_path=repo_charts_dir / "contributor_churn_funnel.png",
     )
-    
+
     # Retention Chart - extended range as requested
     max_prs = int(gfi_starters["pr_count"].max()) if not gfi_starters.empty else 10
-    retention_rows = []
-    for i in range(1, max_prs + 1):
-        retention_rows.append({
-            "min_prs": i,
-            "contributors": len(gfi_starters[gfi_starters["pr_count"] >= i])
-        })
-    retention_df = pd.DataFrame(retention_rows)
-    
+    retention_df = pd.DataFrame(
+        [
+            {"min_prs": i, "contributors": len(gfi_starters[gfi_starters["pr_count"] >= i])}
+            for i in range(1, max_prs + 1)
+        ]
+    )
+
     plot_line(
         df=retention_df,
         x_col="min_prs",
         y_col="contributors",
         title=f"{short_repo}: Contributor Retention by PR Count",
-        output_path=repo_charts_dir / "contributor_retention.png"
+        output_path=repo_charts_dir / "contributor_retention.png",
     )
 
     # New Visualization: Level Transitions
@@ -128,7 +127,7 @@ def run():
             x_col="transition",
             y_col="count",
             title=f"{short_repo}: GFI Starter Level Transitions",
-            output_path=repo_charts_dir / "contributor_transitions.png"
+            output_path=repo_charts_dir / "contributor_transitions.png",
         )
 
     # New Visualization: Average Tenure by Max Level reached
@@ -136,7 +135,10 @@ def run():
     tenure_by_level = tenure_by_level.rename(columns={"tenure_days": "avg_tenure_days"})
     # Order by difficulty
     from hiero_analytics.domain.labels import DIFFICULTY_ORDER
-    tenure_by_level["max_level"] = pd.Categorical(tenure_by_level["max_level"], categories=DIFFICULTY_ORDER, ordered=True)
+
+    tenure_by_level["max_level"] = pd.Categorical(
+        tenure_by_level["max_level"], categories=DIFFICULTY_ORDER, ordered=True
+    )
     tenure_by_level = tenure_by_level.sort_values("max_level")
 
     plot_bar(
@@ -144,8 +146,9 @@ def run():
         x_col="max_level",
         y_col="avg_tenure_days",
         title=f"{short_repo}: Avg Tenure (Days) by Max Level Reached",
-        output_path=repo_charts_dir / "avg_tenure_by_level.png"
+        output_path=repo_charts_dir / "avg_tenure_by_level.png",
     )
+
 
 if __name__ == "__main__":
     run()

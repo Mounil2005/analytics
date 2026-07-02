@@ -49,10 +49,7 @@ def activity_to_role_dataframe(
         # Normalize to UTC so downstream window comparisons never hit
         # a naive-vs-aware mismatch.
         occurred_at = record.occurred_at
-        if occurred_at.tzinfo is None:
-            occurred_at = occurred_at.replace(tzinfo=UTC)
-        else:
-            occurred_at = occurred_at.astimezone(UTC)
+        occurred_at = occurred_at.replace(tzinfo=UTC) if occurred_at.tzinfo is None else occurred_at.astimezone(UTC)
 
         return {
             "repo": repo_name,

@@ -63,9 +63,7 @@ def test_main_runs_extra_orgs_then_dashboard_once(monkeypatch):
     monkeypatch.setattr(run_all, "EXTRA_ORGS", ["good-org", "bad-org"])
 
     attempted = []
-    monkeypatch.setattr(
-        run_all, "_run_extra_org", lambda org: attempted.append(org) or org != "bad-org"
-    )
+    monkeypatch.setattr(run_all, "_run_extra_org", lambda org: attempted.append(org) or org != "bad-org")
     dashboard_runs = []
     monkeypatch.setattr(run_all, "run_dashboard", lambda: dashboard_runs.append(True))
 

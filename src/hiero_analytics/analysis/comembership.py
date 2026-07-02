@@ -64,9 +64,9 @@ def build_comembership_network(
     active = rows[rows["active"].astype(bool)].groupby("repo")["user"].nunique()
     nodes = pd.DataFrame({"repo": total.index, "total_members": total.to_numpy()})
     nodes["active_members"] = nodes["repo"].map(active).fillna(0).astype(int)
-    nodes = nodes[_NODE_COLUMNS].sort_values(
-        ["active_members", "total_members"], ascending=False
-    ).reset_index(drop=True)
+    nodes = (
+        nodes[_NODE_COLUMNS].sort_values(["active_members", "total_members"], ascending=False).reset_index(drop=True)
+    )
 
     # Edge weight = number of members two repos have in common.
     repos_per_user = rows.groupby("user")["repo"].apply(lambda s: sorted(set(s)))
@@ -75,8 +75,12 @@ def build_comembership_network(
         for repo_a, repo_b in itertools.combinations(repos, 2):
             shared[(repo_a, repo_b)] += 1
 
-    edges = pd.DataFrame(
-        [(a, b, count) for (a, b), count in shared.items() if count >= min_shared],
-        columns=_EDGE_COLUMNS,
-    ).sort_values("shared", ascending=False).reset_index(drop=True)
+    edges = (
+        pd.DataFrame(
+            [(a, b, count) for (a, b), count in shared.items() if count >= min_shared],
+            columns=_EDGE_COLUMNS,
+        )
+        .sort_values("shared", ascending=False)
+        .reset_index(drop=True)
+    )
     return nodes, edges

@@ -161,8 +161,7 @@ def test_first_and_last_active_span_the_contributors_events():
     """first_active / last_active are the earliest and latest event timestamps."""
     records = [
         _event(actor="a", activity_type="authored_pull_request", target_number=1, month=1),
-        _event(actor="a", activity_type="reviewed_pull_request", target_number=2,
-               target_author="b", month=5),
+        _event(actor="a", activity_type="reviewed_pull_request", target_number=2, target_author="b", month=5),
     ]
     a = build_contributor_profiles(records).iloc[0]
     assert a["first_active"] == datetime(2024, 1, 1, tzinfo=UTC)

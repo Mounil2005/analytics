@@ -57,7 +57,9 @@ def _build_contributor_network(records, label_events, by_repo, org_charts_dir) -
     min_shared = max(1, round(len(by_repo) / CONTRIBUTOR_NETWORK_REPOS_PER_LINK))
     nodes, edges = build_comembership_network(membership, min_shared=min_shared)
     if render_comembership_network(
-        nodes, edges, org_charts_dir / "all_network.png",
+        nodes,
+        edges,
+        org_charts_dir / "all_network.png",
         title=f"{ORG} — contributors network (repos linked by shared contributors)",
         member_label="contributors",
     ):
