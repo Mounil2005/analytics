@@ -1,3 +1,5 @@
+"""Example script for running onboarding pipeline analysis on a single repository."""
+
 from __future__ import annotations
 
 from hiero_analytics.analysis.dataframe_utils import (
@@ -18,7 +20,7 @@ from hiero_analytics.domain.labels import (
 
 
 def main() -> None:
-
+    """Run onboarding pipeline analysis and print results for the configured repository."""
     ensure_output_dirs()
 
     client = GitHubClient()

@@ -1,3 +1,5 @@
+"""Runner script for onboarding signal analysis: GFI supply vs contributor demand over time."""
+
 import logging
 import pathlib
 
@@ -15,7 +17,7 @@ from hiero_analytics.analysis.prs import (
 from hiero_analytics.analysis.timeseries import cumulative_timeseries
 from hiero_analytics.config.charts import PRIMARY_PALETTE
 from hiero_analytics.config.logging_config import setup_logging
-from hiero_analytics.config.paths import ORG
+from hiero_analytics.config.paths import ORG, ensure_repo_dirs
 from hiero_analytics.data_sources.github_client import GitHubClient
 from hiero_analytics.data_sources.github_ingest import (
     fetch_repo_issues_graphql,
@@ -31,8 +33,6 @@ ORG_NAME = ORG
 REPO = "hiero-sdk-python"
 short_repo = bare_repo(REPO)
 
-from hiero_analytics.config.paths import ensure_repo_dirs
-
 logger = logging.getLogger(__name__)
 
 
@@ -47,7 +47,7 @@ def plot_issue_vs_contributors(
     contrib_label: str = "Contributors",
     title: str,
 ) -> None:
-
+    """Plot cumulative issues vs cumulative contributors as a scatter + regression chart."""
     issues = issues_ts.sort_values(issue_date_col).rename(columns={issue_date_col: "date", "count": "issue_count"})
 
     contrib = contrib_ts.sort_values(contrib_date_col).rename(
@@ -76,6 +76,7 @@ def plot_issue_vs_contributors(
 
 
 def run():
+    """Fetch onboarding data for the configured repository and generate charts."""
     client = GitHubClient()
     repo_data_dir, repo_charts_dir = ensure_repo_dirs(f"{ORG_NAME}/{REPO}")
 
@@ -119,9 +120,10 @@ def run():
         output_path: pathlib.Path,
     ) -> None:
         """
-        Plot onboarding signal:
+        Plot onboarding signal.
+
         - GFI cumulative (left axis)
-        - unique contributors (right axis)
+        - unique contributors (right axis).
         """
         if gfi_ts.empty or contrib_ts.empty:
             raise ValueError("Input time series cannot be empty")
@@ -209,13 +211,13 @@ def run():
         # -------------------------
         # Filter issues by difficulty
         # -------------------------
-        issues_subset = issues_df[issues_df["labels"].apply(lambda xs: spec.matches(set(xs or [])))]
+        issues_subset = issues_df[issues_df["labels"].apply(lambda xs, _spec=spec: _spec.matches(set(xs or [])))]
         issues_ts_subset = cumulative_timeseries(issues_subset, "created_at")
 
         # -------------------------
         # Filter PRs by difficulty (via issue_labels)
         # -------------------------
-        prs_subset = pr_df[pr_df["issue_labels"].apply(lambda xs: spec.matches(set(xs or [])))]
+        prs_subset = pr_df[pr_df["issue_labels"].apply(lambda xs, _spec=spec: _spec.matches(set(xs or [])))]
 
         # -------------------------
         # Unique contributors per difficulty

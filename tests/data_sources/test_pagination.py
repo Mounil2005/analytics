@@ -1,3 +1,4 @@
+"""Tests for the pagination data source module."""
 
 import hiero_analytics.data_sources.pagination as pagination
 
@@ -5,8 +6,9 @@ import hiero_analytics.data_sources.pagination as pagination
 # page-number pagination
 # ---------------------------------------------------------
 
-def test_paginate_page_number_multiple_pages():
 
+def test_paginate_page_number_multiple_pages():
+    """Test that multiple full pages are accumulated correctly."""
     pages = {
         1: [1, 2, 3],
         2: [4, 5, 6],
@@ -22,7 +24,7 @@ def test_paginate_page_number_multiple_pages():
 
 
 def test_paginate_page_number_partial_page_stops():
-
+    """Test that pagination stops after a partial page is returned."""
     pages = {
         1: [1, 2, 3],
         2: [4],  # partial page
@@ -37,8 +39,9 @@ def test_paginate_page_number_partial_page_stops():
 
 
 def test_paginate_page_number_empty_first_page():
+    """Test that an empty first page returns an empty list immediately."""
 
-    def fetch(page):
+    def fetch(_page):
         return []
 
     results = pagination.paginate_page_number(fetch)
@@ -47,6 +50,7 @@ def test_paginate_page_number_empty_first_page():
 
 
 def test_paginate_page_number_max_pages_guard():
+    """Test that max_pages limits the number of pages fetched."""
 
     def fetch(page):
         return [page] * 100
@@ -64,8 +68,9 @@ def test_paginate_page_number_max_pages_guard():
 # cursor pagination
 # ---------------------------------------------------------
 
-def test_paginate_cursor_multiple_pages():
 
+def test_paginate_cursor_multiple_pages():
+    """Test that cursor pagination accumulates items across multiple pages."""
     data = {
         None: ([1, 2], "A", True),
         "A": ([3, 4], "B", True),
@@ -81,8 +86,9 @@ def test_paginate_cursor_multiple_pages():
 
 
 def test_paginate_cursor_single_page():
+    """Test that a single-page cursor response returns all items and stops."""
 
-    def fetch(cursor):
+    def fetch(_cursor):
         return ([1, 2], None, False)
 
     results = pagination.paginate_cursor(fetch)
@@ -91,8 +97,9 @@ def test_paginate_cursor_single_page():
 
 
 def test_paginate_cursor_max_pages_guard():
+    """Test that max_pages stops infinite cursor pagination."""
 
-    def fetch(cursor):
+    def fetch(_cursor):
         return ([1], "next", True)
 
     results = pagination.paginate_cursor(
@@ -104,10 +111,8 @@ def test_paginate_cursor_max_pages_guard():
 
 
 def test_paginate_cursor_handles_empty_items():
-
-    calls = {
-        None: ([], None, False)
-    }
+    """Test that an empty items page returns an empty list."""
+    calls = {None: ([], None, False)}
 
     def fetch(cursor):
         return calls[cursor]

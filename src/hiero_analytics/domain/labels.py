@@ -26,7 +26,7 @@ class LabelSpec:
             name=f"{self.name} + {other.name}",
             labels=self.labels | other.labels,
         )
-    
+
     def matches(self, labels: set[str]) -> bool:
         """
         Return True if any of the given labels matches this spec's labels.

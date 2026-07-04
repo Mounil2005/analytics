@@ -93,8 +93,8 @@ def test_repo_activity_heatmap_aggregates_and_excludes_bots():
     """Per-repo weighted scores sum the events; bots are excluded; busiest repo first."""
     records = [
         _ev("alice", "authored_pull_request", 1, repo="o/a"),  # prs created -> 3
-        _ev("bob", "merged_pull_request", 2, repo="o/a"),       # prs merged -> 2
-        _ev("carol", "authored_issue", 3, repo="o/b"),          # issues -> 2
+        _ev("bob", "merged_pull_request", 2, repo="o/a"),  # prs merged -> 2
+        _ev("carol", "authored_issue", 3, repo="o/b"),  # issues -> 2
         _ev("dependabot[bot]", "authored_pull_request", 4, repo="o/a"),  # bot -> excluded
     ]
     df = build_repo_activity_heatmap(records)

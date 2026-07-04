@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pandas as pd
 
@@ -15,7 +15,7 @@ from hiero_analytics.data_sources.models import PullRequestDifficultyRecord
 
 
 def _dt(day: int) -> datetime:
-    return datetime(2024, 1, day, tzinfo=timezone.utc)
+    return datetime(2024, 1, day, tzinfo=UTC)
 
 
 def _record(
@@ -61,9 +61,7 @@ def test_prs_to_dataframe_empty_returns_stable_schema():
 
 def test_prs_to_dataframe_maps_record_fields():
     """Each record becomes a row with the mapped subset of fields."""
-    rec = _record(
-        pr_number=7, author="alice", labels=["good first issue"], merged_day=3
-    )
+    rec = _record(pr_number=7, author="alice", labels=["good first issue"], merged_day=3)
 
     df = prs_to_dataframe([rec])
 
@@ -87,9 +85,7 @@ def test_filter_gfi_prs_empty_passthrough():
 
 def test_filter_gfi_prs_keeps_only_onboarding_labelled_rows():
     """Only PRs whose issue carries an onboarding label survive."""
-    gfi = _record(
-        pr_number=1, author="a", labels=["good first issue"], merged_day=1
-    )
+    gfi = _record(pr_number=1, author="a", labels=["good first issue"], merged_day=1)
     candidate = _record(
         pr_number=2,
         author="b",

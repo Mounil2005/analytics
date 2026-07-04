@@ -325,6 +325,7 @@ def _isolate_dataset_path(monkeypatch, tmp_path):
     ``dataset_path`` is imported into both resource submodules that use it, so
     patch it on each (the org-issues and contributor-activity call sites).
     """
+
     def fake(resource, scope, fingerprint="all"):
         return tmp_path / f"{resource}_{scope}_{fingerprint}.json"
 
@@ -366,9 +367,9 @@ def test_fetch_org_issues_first_run_full_then_incremental(monkeypatch, tmp_path)
     full.reset_mock()
     second = ingest.fetch_org_issues_graphql(mock_client, "org")
 
-    full.assert_not_called()      # second run does not do a full fetch
-    delta.assert_called_once()    # it fetches the incremental delta
-    assert second == issues       # empty delta -> merged set unchanged
+    full.assert_not_called()  # second run does not do a full fetch
+    delta.assert_called_once()  # it fetches the incremental delta
+    assert second == issues  # empty delta -> merged set unchanged
 
 
 def test_fetch_org_issues_dataset_fingerprint_ignores_state_order(monkeypatch, tmp_path):
@@ -398,12 +399,18 @@ def test_fetch_org_label_events_incremental_dedups_on_merge(monkeypatch, tmp_pat
     repos = [Mock(owner="org", name="repo", full_name="org/repo")]
     occurred = datetime.now(UTC)  # recent, so the 30-day refresh does not trigger
     ev1 = IssueTimelineEventRecord(
-        repo="org/repo", issue_number=1, event_type="labeled",
-        occurred_at=occurred, label="bug",
+        repo="org/repo",
+        issue_number=1,
+        event_type="labeled",
+        occurred_at=occurred,
+        label="bug",
     )
     ev2 = IssueTimelineEventRecord(
-        repo="org/repo", issue_number=2, event_type="unlabeled",
-        occurred_at=occurred, label="bug",
+        repo="org/repo",
+        issue_number=2,
+        event_type="unlabeled",
+        occurred_at=occurred,
+        label="bug",
     )
 
     _isolate_dataset_path(monkeypatch, tmp_path)
@@ -430,12 +437,20 @@ def test_fetch_org_contributor_activity_full_history_is_incremental(monkeypatch,
     repos = [Mock(owner="org", name="repo", full_name="org/repo")]
     occurred = datetime.now(UTC)
     ev1 = ContributorActivityRecord(
-        repo="org/repo", activity_type="authored_pull_request", actor="alice",
-        occurred_at=occurred, target_type="pull_request", target_number=1,
+        repo="org/repo",
+        activity_type="authored_pull_request",
+        actor="alice",
+        occurred_at=occurred,
+        target_type="pull_request",
+        target_number=1,
     )
     ev2 = ContributorActivityRecord(
-        repo="org/repo", activity_type="reviewed_pull_request", actor="bob",
-        occurred_at=occurred, target_type="pull_request", target_number=2,
+        repo="org/repo",
+        activity_type="reviewed_pull_request",
+        actor="bob",
+        occurred_at=occurred,
+        target_type="pull_request",
+        target_number=2,
     )
 
     _isolate_dataset_path(monkeypatch, tmp_path)
@@ -450,10 +465,7 @@ def test_fetch_org_contributor_activity_full_history_is_incremental(monkeypatch,
     assert first == [ev1]
 
     second = ingest.fetch_org_contributor_activity_graphql(mock_client, "org", lookback_days=None)
-    keys = {
-        (e.repo, e.activity_type, e.actor, e.occurred_at, e.target_type, e.target_number)
-        for e in second
-    }
+    keys = {(e.repo, e.activity_type, e.actor, e.occurred_at, e.target_type, e.target_number) for e in second}
     assert len(second) == 2  # ev1 deduped, ev2 added
     assert len(keys) == 2
 
@@ -475,6 +487,7 @@ def test_fetch_org_contributor_activity_bounded_window_skips_dataset(monkeypatch
 # ---------------------------------------------------------
 # _datetime_fields derivation (registry-free datetime handling)
 # ---------------------------------------------------------
+
 
 def test_datetime_fields_match_each_record_schema():
     """Every record's datetime fields are derived from its type hints."""

@@ -30,11 +30,7 @@ def datetime_fields(record_type: type) -> tuple[str, ...]:
     break round-tripping. Cached per type since record schemas are fixed.
     """
     hints = get_type_hints(record_type)
-    return tuple(
-        field.name
-        for field in fields(record_type)
-        if annotation_is_datetime(hints.get(field.name))
-    )
+    return tuple(field.name for field in fields(record_type) if annotation_is_datetime(hints.get(field.name)))
 
 
 def serialize_value(value: object) -> object:

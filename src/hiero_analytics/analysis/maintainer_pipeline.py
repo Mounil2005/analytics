@@ -49,10 +49,7 @@ def activity_to_role_dataframe(
         # Normalize to UTC so downstream window comparisons never hit
         # a naive-vs-aware mismatch.
         occurred_at = record.occurred_at
-        if occurred_at.tzinfo is None:
-            occurred_at = occurred_at.replace(tzinfo=UTC)
-        else:
-            occurred_at = occurred_at.astimezone(UTC)
+        occurred_at = occurred_at.replace(tzinfo=UTC) if occurred_at.tzinfo is None else occurred_at.astimezone(UTC)
 
         return {
             "repo": repo_name,
@@ -69,9 +66,7 @@ def activity_to_role_dataframe(
     )
 
 
-def _active_window_for_year(
-    year: int, today: datetime, window_days: int = 183
-) -> tuple[datetime, datetime]:
+def _active_window_for_year(year: int, today: datetime, window_days: int = 183) -> tuple[datetime, datetime]:
     """Return the (start, end) activity window for a given year.
 
     Completed years use a fixed H2 window (Jul 1 – Dec 31) so historical

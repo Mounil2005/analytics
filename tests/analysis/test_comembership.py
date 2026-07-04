@@ -45,8 +45,10 @@ def test_edges_are_shared_members_above_threshold():
     """Two repos link when they share members; weak links drop below min_shared."""
     membership = pd.DataFrame(
         [
-            {"repo": "a", "user": "alice", "active": True}, {"repo": "a", "user": "bob", "active": True},
-            {"repo": "b", "user": "alice", "active": True}, {"repo": "b", "user": "bob", "active": True},
+            {"repo": "a", "user": "alice", "active": True},
+            {"repo": "a", "user": "bob", "active": True},
+            {"repo": "b", "user": "alice", "active": True},
+            {"repo": "b", "user": "bob", "active": True},
             {"repo": "c", "user": "alice", "active": True},  # a–c share only alice (1)
         ]
     )

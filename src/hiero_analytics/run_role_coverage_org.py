@@ -164,24 +164,26 @@ def _write_role_networks(combined, all_time_by_repo, recent_by_repo, role_lookup
     general_membership = build_active_membership(all_time_by_repo, recent_by_repo, exclude=role_holder_logins)
 
     groups = [
-        ("maintainer", "maintainers", role_membership(combined, "maintainer"),
-         ROLE_NETWORK_MIN_SHARED["maintainer"]),
-        ("committer", "committers", role_membership(combined, "committer"),
-         ROLE_NETWORK_MIN_SHARED["committer"]),
+        ("maintainer", "maintainers", role_membership(combined, "maintainer"), ROLE_NETWORK_MIN_SHARED["maintainer"]),
+        ("committer", "committers", role_membership(combined, "committer"), ROLE_NETWORK_MIN_SHARED["committer"]),
         ("triage", "triage", role_membership(combined, "triage"), ROLE_NETWORK_MIN_SHARED["triage"]),
         ("general", "general contributors", general_membership, ROLE_NETWORK_MIN_SHARED["general"]),
     ]
     for key, label, membership, min_shared in groups:
         nodes, edges = build_comembership_network(membership, min_shared=min_shared)
         if render_comembership_network(
-            nodes, edges, org_charts_dir / f"{key}_network.png",
+            nodes,
+            edges,
+            org_charts_dir / f"{key}_network.png",
             title=f"{ORG} — {label} network (repos linked by shared {label})",
             member_label=label,
         ):
             logger.info("%s network: %d repos, %d links (shared>=%d)", label, len(nodes), len(edges), min_shared)
 
 
-def _write_team_tables(config, role_lookup, all_time_by_repo, all_time_org_profiles, global_last_seen, org_data_dir, *, now):
+def _write_team_tables(
+    config, role_lookup, all_time_by_repo, all_time_org_profiles, global_last_seen, org_data_dir, *, now
+):
     """Gone-dark holders, team-activity tables, and spotlight (maintainer/TSC) by-repo tables."""
     globally_quiet = find_globally_quiet_role_holders(
         role_lookup, global_last_seen, now=now, threshold_days=GONE_DARK_DAYS
@@ -223,11 +225,15 @@ def main() -> None:
 
     client = GitHubClient()
     records = load_or_fetch(
-        "contributor_activity", ORG, ContributorActivityRecord,
+        "contributor_activity",
+        ORG,
+        ContributorActivityRecord,
         lambda: fetch_org_contributor_activity_graphql(client, org=ORG, lookback_days=None),
     )
     label_events = load_or_fetch(
-        "issue_label_events", ORG, IssueTimelineEventRecord,
+        "issue_label_events",
+        ORG,
+        IssueTimelineEventRecord,
         lambda: fetch_org_issue_label_events_graphql(client, org=ORG),
     )
 
@@ -235,7 +241,8 @@ def main() -> None:
     all_time_by_repo, all_time_org_profiles, recent_by_repo, repo_last_seen, global_last_seen = profiles
     logger.info(
         "All-time profiles across %d repos; role coverage also reports last %d days",
-        len(all_time_by_repo), ROLE_ACTIVE_DAYS,
+        len(all_time_by_repo),
+        ROLE_ACTIVE_DAYS,
     )
 
     combined = _write_role_coverage(roles_by_repo, all_time_by_repo, recent_by_repo, repo_last_seen, now=now)

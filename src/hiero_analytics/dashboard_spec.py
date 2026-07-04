@@ -89,26 +89,41 @@ CHART_MACROS = [
                     # The compact charts share the top rows; the two wide
                     # composition charts then stack full-width, one row each.
                     "files": [
-                        ("Maintainers by organisation", [
-                            ("All", "affiliation_donut.png"),
-                            ("Active 90d", "affiliation_donut_active.png"),
-                        ]),
-                        ("Single-employer teams by org", [
-                            ("All", "single_employer_teams_by_org.png"),
-                            ("Active 90d", "single_employer_teams_by_org_active.png"),
-                        ]),
-                        ("Single-employer repos by org", [
-                            ("All", "single_employer_repos_by_org.png"),
-                            ("Active 90d", "single_employer_repos_by_org_active.png"),
-                        ]),
-                        ("Organisation mix by repo", [
-                            ("All", "repo_affiliation_composition.png"),
-                            ("Active 90d", "repo_affiliation_composition_active.png"),
-                        ]),
-                        ("Organisation mix by team", [
-                            ("All", "team_affiliation_composition.png"),
-                            ("Active 90d", "team_affiliation_composition_active.png"),
-                        ]),
+                        (
+                            "Maintainers by organisation",
+                            [
+                                ("All", "affiliation_donut.png"),
+                                ("Active 90d", "affiliation_donut_active.png"),
+                            ],
+                        ),
+                        (
+                            "Single-employer teams by org",
+                            [
+                                ("All", "single_employer_teams_by_org.png"),
+                                ("Active 90d", "single_employer_teams_by_org_active.png"),
+                            ],
+                        ),
+                        (
+                            "Single-employer repos by org",
+                            [
+                                ("All", "single_employer_repos_by_org.png"),
+                                ("Active 90d", "single_employer_repos_by_org_active.png"),
+                            ],
+                        ),
+                        (
+                            "Organisation mix by repo",
+                            [
+                                ("All", "repo_affiliation_composition.png"),
+                                ("Active 90d", "repo_affiliation_composition_active.png"),
+                            ],
+                        ),
+                        (
+                            "Organisation mix by team",
+                            [
+                                ("All", "team_affiliation_composition.png"),
+                                ("Active 90d", "team_affiliation_composition_active.png"),
+                            ],
+                        ),
                     ],
                 },
             ],
@@ -678,9 +693,7 @@ CHART_NOTES = {
         "Each repository's OpenSSF score split into its individual checks (one colour per check, e.g. "
         "Code-Review, Branch-Protection), so you can see which practices contribute."
     ),
-    "org_codeowner_summary.png": (
-        "How many repositories have a CODEOWNERS file (Present) versus none (Missing)."
-    ),
+    "org_codeowner_summary.png": ("How many repositories have a CODEOWNERS file (Present) versus none (Missing)."),
     "org_runner_chart.png": (
         "GitHub Actions runner usage per repository, stacked by type: self-hosted, standard "
         "(GitHub-hosted), or indeterminate (could not be classified)."
@@ -689,12 +702,9 @@ CHART_NOTES = {
         "Discord message volume grouped by topic area, split into the last 90 days versus earlier history. "
         "From a manual Discord export (counts are as of the export date)."
     ),
-    "hiero_discord_monthly_traffic.png": (
-        "Total Discord messages per month across the export's date range."
-    ),
+    "hiero_discord_monthly_traffic.png": ("Total Discord messages per month across the export's date range."),
     "hiero_discord_recent_activity_30d.png": (
-        "The five Discord channels with the most messages in the last 30 days (relative to the export "
-        "snapshot date)."
+        "The five Discord channels with the most messages in the last 30 days (relative to the export snapshot date)."
     ),
 }
 
@@ -780,10 +790,7 @@ CHART_METHODOLOGY = {
             "Take every tracked event in the last six months — issues opened, PRs opened, reviews, merges — "
             "excluding bots."
         ),
-        (
-            "Weight each event (issues ×2, reviews ×3, PRs opened ×3, merges ×2) and bucket it by the month it "
-            "happened."
-        ),
+        ("Weight each event (issues ×2, reviews ×3, PRs opened ×3, merges ×2) and bucket it by the month it happened."),
         "Sum the weighted score per contributor per month.",
         "Rank contributors by their six-month total and keep the top 25.",
         "Colour each cell by its monthly score (greener = more active).",

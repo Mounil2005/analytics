@@ -1,3 +1,5 @@
+"""Example script for running difficulty analysis on a single repository."""
+
 from __future__ import annotations
 
 from hiero_analytics.analysis.dataframe_utils import issues_to_dataframe
@@ -12,7 +14,7 @@ REPO = "hiero-sdk-python"
 
 
 def main() -> None:
-
+    """Run difficulty analysis and print results for the configured repository."""
     ensure_output_dirs()
 
     client = GitHubClient()

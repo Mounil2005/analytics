@@ -1,3 +1,5 @@
+"""Runner script that fetches OpenSSF Scorecard results for all repos in an organisation."""
+
 from __future__ import annotations
 
 import logging
@@ -44,6 +46,7 @@ def fetch_all_scorecards(repos) -> list[ScorecardRecord]:
 
 
 def main():
+    """Fetch scorecards for all organisation repos and generate bar charts."""
     client = GitHubClient()
     _, org_charts_dir = ensure_org_dirs(ORG)
 

@@ -9,6 +9,7 @@ setup_logging(modules="hiero_analytics")
 
 ORGANIZATION = ORG
 
+
 def main() -> None:
     """Fetch merged PR difficulty records across the configured organization."""
     client = GitHubClient()
@@ -22,7 +23,6 @@ def main() -> None:
     print(f"Collected {len(records)} merged PR records across {ORGANIZATION}\n")
 
     for record in records[:5]:
-
         print(
             record.repo,
             record.pr_number,

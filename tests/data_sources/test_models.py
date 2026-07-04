@@ -22,6 +22,7 @@ from hiero_analytics.data_sources.models import (
 # RepositoryRecord
 # ---------------------------------------------------------
 
+
 def test_repository_record_creation():
     """Repository records should initialize required fields."""
     repo = RepositoryRecord(
@@ -60,6 +61,7 @@ def test_repository_record_optional_fields():
 # IssueRecord
 # ---------------------------------------------------------
 
+
 def test_issue_record_creation():
     """Issue records should store the normalized issue payload."""
     created = datetime(2024, 1, 1)
@@ -84,6 +86,7 @@ def test_issue_record_creation():
 # ---------------------------------------------------------
 # PullRequestDifficultyRecord
 # ---------------------------------------------------------
+
 
 def test_pr_difficulty_record_creation():
     """PR difficulty records should link pull requests to issue labels."""
@@ -221,6 +224,7 @@ def test_issue_timeline_event_from_github_node_handles_empty():
 # dataclass equality
 # ---------------------------------------------------------
 
+
 def test_repository_record_equality():
     """Repository records should compare by value."""
     r1 = RepositoryRecord("org/repo", "repo", "org")
@@ -232,6 +236,7 @@ def test_repository_record_equality():
 # ---------------------------------------------------------
 # immutability
 # ---------------------------------------------------------
+
 
 def test_repository_record_is_frozen():
     """Repository records should be immutable."""
@@ -260,6 +265,7 @@ def test_issue_record_is_frozen():
 # ---------------------------------------------------------
 # ContributorMergedPRCountRecord
 # ---------------------------------------------------------
+
 
 def test_contributor_merged_pr_count_record_creation():
     """Test creating a ContributorMergedPRCountRecord."""
@@ -306,9 +312,11 @@ def test_contributor_merged_pr_count_record_equality():
     assert r1 == r2
     assert r1 != r3
 
+
 # ---------------------------------------------------------
 # parse datetime
 # ---------------------------------------------------------
+
 
 def test_parse_dt():
     """ISO timestamps should parse into datetime objects."""
@@ -328,6 +336,7 @@ def test_parse_dt_none():
 # ---------------------------------------------------------
 # hydration helpers (defensive extraction)
 # ---------------------------------------------------------
+
 
 def test_extract_login_reads_nested_login():
     """A well-formed actor node yields its login."""

@@ -41,17 +41,17 @@ def main() -> None:
     """Generate the Hiero Hackers organization chart bundle."""
     # Initialize GitHub API client
     client = GitHubClient()
-    
+
     # Create output directories
     data_dir, charts_dir = ensure_org_dirs(ORG)
-    
+
     # Fetch data from GitHub API
     repo_records = fetch_org_repos_graphql(client, ORG)
     activity_records = fetch_org_contributor_activity_graphql(client, ORG)
-    
+
     # Transform to DataFrames
     repos_df = repos_to_dataframe(repo_records)
-    
+
     # Generate language distribution chart and CSV (only if data exists)
     language_df = calculate_language_distribution(repos_df)
     if not language_df.empty:
@@ -63,7 +63,7 @@ def main() -> None:
             output_path=charts_dir / "language_distribution.png",
         )
         save_dataframe(language_df, data_dir / "language_distribution.csv")
-    
+
     # Generate push activity summary chart and CSV (only if data has non-zero values)
     activity_df = calculate_push_activity_summary(repos_df, days=30)
     if not activity_df.empty and activity_df["count"].sum() > 0:
@@ -75,7 +75,7 @@ def main() -> None:
             output_path=charts_dir / "push_activity.png",
         )
         save_dataframe(activity_df, data_dir / "push_activity.csv")
-    
+
     # Generate contributor counts chart and CSV (only if data exists)
     contributors_df = build_contributor_counts(activity_records)
     if not contributors_df.empty:
@@ -88,7 +88,7 @@ def main() -> None:
             output_path=charts_dir / "contributor_counts.png",
         )
         save_dataframe(contributors_df, data_dir / "contributor_counts.csv")
-    
+
     logger.info("Hiero Hackers analytics complete. Charts written to %s", charts_dir)
 
 

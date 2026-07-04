@@ -1,26 +1,31 @@
+"""Tests for the GitHubClient HTTP client."""
+
+import threading
 from unittest.mock import Mock
 
 import pytest
+import requests
 
 import hiero_analytics.data_sources.github_client as github_client
 
-import threading 
-import requests
 # ---------------------------------------------------------
 # FIXTURE: disable sleeping
 # ---------------------------------------------------------
 
+
 @pytest.fixture
 def mock_sleep(monkeypatch):
-    monkeypatch.setattr(github_client.time, "sleep", lambda x: None)
+    """Disable actual sleeping in tests by replacing time.sleep with a no-op."""
+    monkeypatch.setattr(github_client.time, "sleep", lambda _: None)
 
 
 # ---------------------------------------------------------
 # HEADER TESTS
 # ---------------------------------------------------------
 
-def test_client_sets_auth_header(monkeypatch):
 
+def test_client_sets_auth_header(monkeypatch):
+    """Verify the client sets Authorization header when a token is available."""
     monkeypatch.setattr(github_client, "GITHUB_TOKEN", "test-token")
 
     client = github_client.GitHubClient()
@@ -29,19 +34,21 @@ def test_client_sets_auth_header(monkeypatch):
 
 
 def test_client_without_token(monkeypatch):
-
+    """Verify no Authorization header is set when no token is provided."""
     monkeypatch.setattr(github_client, "GITHUB_TOKEN", None)
 
     client = github_client.GitHubClient()
 
     assert "Authorization" not in client.session.headers
 
+
 # ---------------------------------------------------------
 # BASIC GET
 # ---------------------------------------------------------
 
-def test_get_success(monkeypatch, mock_sleep):
 
+def test_get_success(monkeypatch, mock_sleep):
+    """Verify a successful GET request returns parsed JSON and increments request counter."""
     mock_response = Mock()
     mock_response.headers = {
         "X-RateLimit-Remaining": "10",
@@ -65,6 +72,7 @@ def test_get_success(monkeypatch, mock_sleep):
     assert result == {"hello": "world"}
     assert client.requests_made == 1
 
+
 def test_no_retry_on_401(monkeypatch, mock_sleep):
     """Verify the client fails immediately on 401 Unauthorized."""
     client = github_client.GitHubClient()
@@ -73,7 +81,7 @@ def test_no_retry_on_401(monkeypatch, mock_sleep):
     mock_response.status_code = 401
     mock_response.ok = False
     mock_response.headers = {}
-   
+
     mock_response.raise_for_status.side_effect = requests.HTTPError("401 Client Error")
 
     request_mock = Mock(return_value=mock_response)
@@ -84,12 +92,14 @@ def test_no_retry_on_401(monkeypatch, mock_sleep):
 
     assert request_mock.call_count == 1
 
+
 # ---------------------------------------------------------
 # RATE LIMIT RETRY
 # ---------------------------------------------------------
 
-def test_get_rate_limit_retry(monkeypatch, mock_sleep):
 
+def test_get_rate_limit_retry(monkeypatch, mock_sleep):
+    """Verify the client retries after a 403 rate-limit response."""
     first = Mock()
     first.headers = {
         "X-RateLimit-Remaining": "0",
@@ -122,6 +132,7 @@ def test_get_rate_limit_retry(monkeypatch, mock_sleep):
 
     assert result == {"retried": True}
 
+
 def test_retries_on_502_and_succeeds(monkeypatch, mock_sleep):
     """Verify the client recovers if a 502 is followed by a 200."""
     client = github_client.GitHubClient()
@@ -130,7 +141,7 @@ def test_retries_on_502_and_succeeds(monkeypatch, mock_sleep):
     fail_502.status_code = 502
     fail_502.ok = False
     fail_502.headers = {}
-    
+
     success_200 = Mock()
     success_200.status_code = 200
     success_200.ok = True
@@ -143,16 +154,18 @@ def test_retries_on_502_and_succeeds(monkeypatch, mock_sleep):
     result = client.get("https://api.github.com/test")
 
     assert result == {"data": "recovered"}
-    assert request_mock.call_count == 2  
+    assert request_mock.call_count == 2
+
 
 def test_502_prioritized_over_rate_limit(monkeypatch, mock_sleep):
+    """Verify the 502 retry path takes priority over rate-limit handling."""
     client = github_client.GitHubClient()
 
     fail_502 = Mock()
     fail_502.status_code = 502
     fail_502.ok = False
     fail_502.headers = {
-        "X-RateLimit-Remaining": "0", 
+        "X-RateLimit-Remaining": "0",
         "X-RateLimit-Reset": "0",
     }
 
@@ -169,36 +182,42 @@ def test_502_prioritized_over_rate_limit(monkeypatch, mock_sleep):
 
     assert result == {"ok": True}
     assert request_mock.call_count == 2
+
+
 # ---------------------------------------------------------
 # CONCURRENCY
 # ---------------------------------------------------------
 
+
 def test_counter_thread_safety(monkeypatch):
     """Verify requests_made is accurate when hit by multiple threads."""
     client = github_client.GitHubClient()
-    
+
     mock_response = Mock()
     mock_response.status_code = 200
     mock_response.ok = True
     mock_response.headers = {"X-RateLimit-Remaining": "5000"}
     mock_response.json.return_value = {}
-    
+
     monkeypatch.setattr(client.session, "request", Mock(return_value=mock_response))
 
     # Run 10 threads at once
     threads = [threading.Thread(target=client.get, args=("url",)) for _ in range(10)]
-    for t in threads: t.start()
-    for t in threads: t.join()
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
 
-   
     assert client.requests_made == 10
+
 
 # ---------------------------------------------------------
 # GRAPHQL
 # ---------------------------------------------------------
 
-def test_graphql_request(monkeypatch):
 
+def test_graphql_request(monkeypatch):
+    """Verify a GraphQL query is sent with the correct payload structure."""
     mock_response = Mock()
     mock_response.json.return_value = {"data": {"ok": True}}
     mock_response.raise_for_status = Mock()
@@ -226,7 +245,7 @@ def test_graphql_request(monkeypatch):
 
 
 def test_graphql_fresh_retry_limit_exceeded(monkeypatch, mock_sleep):
-
+    """Verify a RuntimeError is raised when GraphQL rate-limit retries are exhausted."""
     rate_limited = Mock()
     rate_limited.raise_for_status = Mock()
     rate_limited.headers = {}

@@ -69,18 +69,9 @@ def _categorize_channel(channel: str) -> str:
     name = channel.lower()
     if "-did-" in name or "-identity-" in name or name.startswith("heka"):
         return "Identity"
-    if (
-        "-sdk-" in name
-        or name.endswith("-sdk")
-        or "enterprise-java" in name
-        or "playground" in name
-    ):
+    if "-sdk-" in name or name.endswith("-sdk") or "enterprise-java" in name or "playground" in name:
         return "SDKs"
-    if (
-        name.endswith("-maintainers")
-        or name.endswith("-hips")
-        or name.endswith("-community-management")
-    ):
+    if name.endswith("-maintainers") or name.endswith("-hips") or name.endswith("-community-management"):
         return "Governance"
     if name.endswith("-consensus-node") or name.endswith("-mirror-node"):
         return "Core"
@@ -99,8 +90,7 @@ def load_channels_df() -> pd.DataFrame:
     path = _resolve_path("HIERO_DISCORD_CHANNELS_CSV", DEFAULT_CHANNELS_CSV)
     if not path.exists():
         raise FileNotFoundError(
-            f"Channels CSV not found at {path}. "
-            "Place the snapshot there or set HIERO_DISCORD_CHANNELS_CSV."
+            f"Channels CSV not found at {path}. Place the snapshot there or set HIERO_DISCORD_CHANNELS_CSV."
         )
     df = pd.read_csv(path)
     df["channel_label"] = "#" + df["channel"]
@@ -113,8 +103,7 @@ def load_monthly_df() -> pd.DataFrame:
     path = _resolve_path("HIERO_DISCORD_MONTHLY_CSV", DEFAULT_MONTHLY_CSV)
     if not path.exists():
         raise FileNotFoundError(
-            f"Monthly traffic CSV not found at {path}. "
-            "Place the export there or set HIERO_DISCORD_MONTHLY_CSV."
+            f"Monthly traffic CSV not found at {path}. Place the export there or set HIERO_DISCORD_MONTHLY_CSV."
         )
     df = pd.read_csv(path)
     df["month"] = pd.to_datetime(df["month"] + "-01")
@@ -129,8 +118,7 @@ def load_monthly_df() -> pd.DataFrame:
 def plot_recent_activity_30d(channels: pd.DataFrame, output_path: Path, top_n: int = 5) -> None:
     """Top channels by messages in the last 30 days (relative to snapshot)."""
     df = (
-        channels
-        .loc[lambda d: d["d30"] > 0, ["channel_label", "d30"]]
+        channels.loc[lambda d: d["d30"] > 0, ["channel_label", "d30"]]
         .sort_values("d30", ascending=False)
         .head(top_n)
         .rename(columns={"d30": "messages (last 30d)"})
@@ -152,9 +140,9 @@ def plot_category_breakdown(channels: pd.DataFrame, output_path: Path) -> None:
         .sort_values("total", ascending=False)
     )
     plot_stacked_bar(
-        df=grouped.rename(
-            columns={"total": "earlier", "last_90d": "last 90 days"}
-        ).assign(earlier=lambda d: d["earlier"] - d["last 90 days"]),
+        df=grouped.rename(columns={"total": "earlier", "last_90d": "last 90 days"}).assign(
+            earlier=lambda d: d["earlier"] - d["last 90 days"]
+        ),
         x_col="category",
         stack_cols=["last 90 days", "earlier"],
         labels=["Last 90 days", "Earlier history"],
@@ -181,6 +169,7 @@ def plot_monthly_traffic(series: pd.DataFrame, output_path: Path) -> None:
 # --------------------------------------------------------------------------- #
 # Entry point
 # --------------------------------------------------------------------------- #
+
 
 def main() -> None:
     """Generate the Hiero Discord chart bundle."""

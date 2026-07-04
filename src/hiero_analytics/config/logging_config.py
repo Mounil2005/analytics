@@ -27,10 +27,7 @@ class _ModuleFilter(logging.Filter):
         if record.name == __name__:
             return True
 
-        return any(
-            record.name == module or record.name.startswith(f"{module}.")
-            for module in self._modules
-        )
+        return any(record.name == module or record.name.startswith(f"{module}.") for module in self._modules)
 
 
 def _normalize_modules(modules: Iterable[str] | str | None) -> tuple[str, ...]:
@@ -82,15 +79,9 @@ def setup_logging(
 ) -> None:
     """Configure application logging with optional module-focused filtering."""
     requested_level = (
-        level
-        if level is not None
-        else os.getenv(LOG_LEVEL_ENV_VAR, logging.getLevelName(DEFAULT_LOG_LEVEL))
+        level if level is not None else os.getenv(LOG_LEVEL_ENV_VAR, logging.getLevelName(DEFAULT_LOG_LEVEL))
     )
-    requested_modules = (
-        modules
-        if modules is not None
-        else os.getenv(LOG_MODULES_ENV_VAR)
-    )
+    requested_modules = modules if modules is not None else os.getenv(LOG_MODULES_ENV_VAR)
 
     resolved_level, invalid_level = _resolve_log_level(requested_level)
     normalized_modules = _normalize_modules(requested_modules)
@@ -143,17 +134,11 @@ if __name__ == "__main__":
     setup_logging(level="DEBUG", modules="hiero_analytics.data_sources")
 
     # Visible because it matches the module prefix and level
-    logging.getLogger("hiero_analytics.data_sources.client").debug(
-        "Focus: Visible DEBUG from filtered module"
-    )
+    logging.getLogger("hiero_analytics.data_sources.client").debug("Focus: Visible DEBUG from filtered module")
     # Visible because WARNING and above are always shown globally
-    logging.getLogger("other.library").warning(
-        "Focus: Visible WARNING from any module"
-    )
+    logging.getLogger("other.library").warning("Focus: Visible WARNING from any module")
     # NOT visible because it doesn't match the module prefix and is below WARNING
-    logging.getLogger("other.library").info(
-        "Focus: Hidden INFO from non-filtered module"
-    )
+    logging.getLogger("other.library").info("Focus: Hidden INFO from non-filtered module")
 
     # 3. Environment variable control
     # You can also control this via LOG_LEVEL and LOG_MODULES env vars

@@ -203,7 +203,7 @@ def test_repo_org_composition_segments_and_counts():
 def test_repo_org_composition_sorts_most_concentrated_first():
     """Repos where one employer dominates are ordered ahead of cross-org ones."""
     role_lookup = {
-        "org/pure": {"a": "maintainer", "b": "maintainer"},   # 100% Hashgraph
+        "org/pure": {"a": "maintainer", "b": "maintainer"},  # 100% Hashgraph
         "org/mixed": {"a": "maintainer", "c": "maintainer"},  # 50% Hashgraph / 50% LimeChain
     }
     affiliations = {"a": "Hashgraph", "b": "Hashgraph", "c": "LimeChain"}
@@ -218,11 +218,16 @@ def test_repo_org_composition_groups_equal_concentration_by_colour():
         "org/hash1": {"a": "maintainer", "b": "maintainer"},  # 100% Hashgraph
         "org/lime2": {"c": "maintainer", "d2": "maintainer"},  # 100% LimeChain
         "org/hash2": {"a": "maintainer", "b2": "maintainer"},  # 100% Hashgraph
-        "org/hash3": {"a": "maintainer", "e": "maintainer"},   # 100% Hashgraph
+        "org/hash3": {"a": "maintainer", "e": "maintainer"},  # 100% Hashgraph
     }
     affiliations = {
-        "a": "Hashgraph", "b": "Hashgraph", "b2": "Hashgraph", "e": "Hashgraph",
-        "c": "LimeChain", "d": "LimeChain", "d2": "LimeChain",
+        "a": "Hashgraph",
+        "b": "Hashgraph",
+        "b2": "Hashgraph",
+        "e": "Hashgraph",
+        "c": "LimeChain",
+        "d": "LimeChain",
+        "d2": "LimeChain",
     }
     # Hashgraph has more total seats, so it is the first (leftmost) colour; all its
     # bars must come before LimeChain's, even though every bar is equally concentrated.
@@ -249,9 +254,9 @@ def test_repo_org_composition_empty():
 
 
 _TEAMS = {
-    "admins": {"alice", "bob"},          # both Hashgraph -> single-employer
-    "steering": {"alice", "carol"},      # Hashgraph + LimeChain -> diverse
-    "solo": {"alice"},                   # below min_members -> skipped
+    "admins": {"alice", "bob"},  # both Hashgraph -> single-employer
+    "steering": {"alice", "carol"},  # Hashgraph + LimeChain -> diverse
+    "solo": {"alice"},  # below min_members -> skipped
     "mixed-tail": {"alice", "dave", "zoe"},  # Hashgraph + independent + unknown
 }
 _TEAM_AFFILIATIONS = {"alice": "Hashgraph", "bob": "Hashgraph", "carol": "LimeChain", "dave": INDEPENDENT}
@@ -305,15 +310,19 @@ def test_single_employer_team_counts_empty():
 def test_single_employer_repo_counts_groups_by_controlling_org():
     """Single-employer repos roll up by the org whose maintainers solely hold them."""
     role_lookup = {
-        "org/solo-a": {"alice": "maintainer", "bob": "maintainer"},      # all Hashgraph
-        "org/solo-b": {"alice": "maintainer", "carol": "maintainer"},    # all Hashgraph
-        "org/lime": {"dave": "maintainer", "erin": "maintainer"},        # all LimeChain
-        "org/mixed": {"alice": "maintainer", "dave": "maintainer"},      # cross-org -> excluded
+        "org/solo-a": {"alice": "maintainer", "bob": "maintainer"},  # all Hashgraph
+        "org/solo-b": {"alice": "maintainer", "carol": "maintainer"},  # all Hashgraph
+        "org/lime": {"dave": "maintainer", "erin": "maintainer"},  # all LimeChain
+        "org/mixed": {"alice": "maintainer", "dave": "maintainer"},  # cross-org -> excluded
         "org/with-indie": {"alice": "maintainer", "frank": "maintainer"},  # has independent -> excluded
     }
     affiliations = {
-        "alice": "Hashgraph", "bob": "Hashgraph", "carol": "Hashgraph",
-        "dave": "LimeChain", "erin": "LimeChain", "frank": INDEPENDENT,
+        "alice": "Hashgraph",
+        "bob": "Hashgraph",
+        "carol": "Hashgraph",
+        "dave": "LimeChain",
+        "erin": "LimeChain",
+        "frank": INDEPENDENT,
     }
     diversity = build_repo_affiliation_diversity(role_lookup, affiliations)
     counts = build_single_employer_repo_counts(diversity).set_index("organisation")["repos"]
@@ -340,8 +349,8 @@ def test_team_org_composition_filters_and_segments():
     role = {f"u{i}": "Hashgraph" for i in range(3)}
     role.update({"v0": "LimeChain", "v1": INDEPENDENT})
     teams = {
-        "big": {"u0", "u1", "u2", "v0"},   # 4 resolved -> included
-        "small": {"u0", "v1"},              # 2 resolved -> excluded at min_resolved=4
+        "big": {"u0", "u1", "u2", "v0"},  # 4 resolved -> included
+        "small": {"u0", "v1"},  # 2 resolved -> excluded at min_resolved=4
     }
     frame, segments = build_team_org_composition(teams, role, min_resolved=4)
 
@@ -358,12 +367,14 @@ def test_team_org_composition_empty_when_below_floor():
 
 
 def _contributor_heatmap() -> pd.DataFrame:
-    return pd.DataFrame([
-        {"contributor name": "Alice", "role": "Maintainer", "activity score": 10, "2026-01": 6, "2026-02": 4},
-        {"contributor name": "bob", "role": "Committer", "activity score": 5, "2026-01": 5, "2026-02": 0},
-        {"contributor name": "carol", "role": "Maintainer", "activity score": 8, "2026-01": 3, "2026-02": 5},
-        {"contributor name": "zoe", "role": "General User", "activity score": 99, "2026-01": 99, "2026-02": 0},
-    ])
+    return pd.DataFrame(
+        [
+            {"contributor name": "Alice", "role": "Maintainer", "activity score": 10, "2026-01": 6, "2026-02": 4},
+            {"contributor name": "bob", "role": "Committer", "activity score": 5, "2026-01": 5, "2026-02": 0},
+            {"contributor name": "carol", "role": "Maintainer", "activity score": 8, "2026-01": 3, "2026-02": 5},
+            {"contributor name": "zoe", "role": "General User", "activity score": 99, "2026-01": 99, "2026-02": 0},
+        ]
+    )
 
 
 def test_org_activity_heatmap_aggregates_and_excludes_unmapped():
@@ -398,9 +409,9 @@ def test_filter_active_logins_keeps_recently_active():
     """Only logins with activity at or after the cutoff are kept; case-insensitive."""
     cutoff = datetime(2026, 1, 1, tzinfo=UTC)
     last_active = {
-        "alice": (datetime(2026, 3, 1, tzinfo=UTC), "Alice"),   # after cutoff -> active
-        "bob": (datetime(2025, 6, 1, tzinfo=UTC), "Bob"),       # before cutoff -> quiet
-        "carol": (datetime(2026, 1, 1, tzinfo=UTC), "Carol"),   # exactly cutoff -> active
+        "alice": (datetime(2026, 3, 1, tzinfo=UTC), "Alice"),  # after cutoff -> active
+        "bob": (datetime(2025, 6, 1, tzinfo=UTC), "Bob"),  # before cutoff -> quiet
+        "carol": (datetime(2026, 1, 1, tzinfo=UTC), "Carol"),  # exactly cutoff -> active
     }
     active = filter_active_logins({"Alice", "bob", "carol", "dave"}, last_active, cutoff)
 
@@ -409,9 +420,7 @@ def test_filter_active_logins_keeps_recently_active():
 
 def test_top_n_with_other_folds_the_tail():
     """Beyond top_n, the remaining rows collapse into a single 'Other (k)' row."""
-    dist = pd.DataFrame(
-        {"organisation": ["A", "B", "C", "D", "E"], "maintainers": [10, 8, 6, 4, 2]}
-    )
+    dist = pd.DataFrame({"organisation": ["A", "B", "C", "D", "E"], "maintainers": [10, 8, 6, 4, 2]})
     folded = top_n_with_other(dist, "organisation", "maintainers", top_n=3)
     assert list(folded["organisation"]) == ["A", "B", "C", "Other (2)"]
     assert folded[folded["organisation"] == "Other (2)"]["maintainers"].iloc[0] == 6  # 4 + 2

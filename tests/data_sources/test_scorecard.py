@@ -1,11 +1,11 @@
-import pytest
-from unittest.mock import patch, Mock
+"""Tests for the scorecard data source module."""
+
+from unittest.mock import Mock, patch
 
 import requests
 
 from hiero_analytics.data_sources.models import ScorecardRecord
 from hiero_analytics.data_sources.scorecard import fetch_repo_scorecard
-
 
 MOCK_RESPONSE = {
     "score": 7.5,

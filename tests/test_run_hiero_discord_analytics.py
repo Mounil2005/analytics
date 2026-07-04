@@ -13,7 +13,6 @@ matplotlib.use("Agg")
 
 import hiero_analytics.run_hiero_discord_analytics as runner
 
-
 # --------------------------------------------------------------------------- #
 # Fixtures
 # --------------------------------------------------------------------------- #
@@ -24,18 +23,12 @@ CHANNELS_CSV_TEXT = (
     "hiero-general,2026-05-10,95,124,160,200\n"
     "hiero-sdk-cpp,2026-05-10,27,29,55,56\n"
     "hiero-website,2026-04-28,15,56,155,155\n"
-    "hiero-sdk-java,2026-02-02,0,0,4,8\n"        # excluded by d30>0 filter
-    "hiero-hips,2026-02-09,0,0,4,9\n"            # excluded by d30>0 filter
+    "hiero-sdk-java,2026-02-02,0,0,4,8\n"  # excluded by d30>0 filter
+    "hiero-hips,2026-02-09,0,0,4,9\n"  # excluded by d30>0 filter
 )
 
 # Intentionally unsorted to verify load_monthly_df sorts ascending.
-MONTHLY_CSV_TEXT = (
-    "month,messages\n"
-    "2026-01,258\n"
-    "2025-12,31\n"
-    "2026-02,230\n"
-    "2024-09,13\n"
-)
+MONTHLY_CSV_TEXT = "month,messages\n2026-01,258\n2025-12,31\n2026-02,230\n2024-09,13\n"
 
 
 @pytest.fixture
@@ -60,7 +53,9 @@ def monthly_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 # Loader tests
 # --------------------------------------------------------------------------- #
 
+
 def test_load_channels_df_reads_csv_and_derives_label_and_category(channels_csv: Path) -> None:
+    """Test that load_channels_df reads the CSV and derives label and category columns."""
     df = runner.load_channels_df()
 
     # All CSV columns plus the derived label and (auto-derived) category.
@@ -104,10 +99,12 @@ def test_load_channels_df_reads_csv_and_derives_label_and_category(channels_csv:
     ],
 )
 def test_categorize_channel_maps_known_channels(channel: str, expected: str) -> None:
+    """Test that _categorize_channel returns the expected category for each channel."""
     assert runner._categorize_channel(channel) == expected
 
 
 def test_load_channels_df_raises_when_missing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that load_channels_df raises FileNotFoundError when the CSV is missing."""
     monkeypatch.setenv("HIERO_DISCORD_CHANNELS_CSV", str(tmp_path / "does-not-exist.csv"))
 
     with pytest.raises(FileNotFoundError, match="HIERO_DISCORD_CHANNELS_CSV"):
@@ -115,6 +112,7 @@ def test_load_channels_df_raises_when_missing(tmp_path: Path, monkeypatch: pytes
 
 
 def test_load_monthly_df_parses_and_sorts(monthly_csv: Path) -> None:
+    """Test that load_monthly_df parses datetimes and returns rows sorted ascending."""
     df = runner.load_monthly_df()
 
     # Datetime conversion lets the chart use date-aware locators.
@@ -126,6 +124,7 @@ def test_load_monthly_df_parses_and_sorts(monthly_csv: Path) -> None:
 
 
 def test_load_monthly_df_raises_when_missing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that load_monthly_df raises FileNotFoundError when the CSV is missing."""
     monkeypatch.setenv("HIERO_DISCORD_MONTHLY_CSV", str(tmp_path / "missing.csv"))
 
     with pytest.raises(FileNotFoundError, match="HIERO_DISCORD_MONTHLY_CSV"):
@@ -146,7 +145,9 @@ def test_resolve_path_falls_back_to_default(tmp_path: Path, monkeypatch: pytest.
 # Chart-writer smoke tests
 # --------------------------------------------------------------------------- #
 
+
 def test_plot_recent_activity_30d_writes_png(tmp_path: Path, channels_csv: Path) -> None:
+    """Test that plot_recent_activity_30d writes a PNG file."""
     output = tmp_path / "recent.png"
     runner.plot_recent_activity_30d(runner.load_channels_df(), output)
 
@@ -170,6 +171,7 @@ def test_plot_recent_activity_30d_filters_zero_d30_and_caps_top_n(channels_csv: 
 
 
 def test_plot_category_breakdown_writes_png(tmp_path: Path, channels_csv: Path) -> None:
+    """Test that plot_category_breakdown writes a PNG file."""
     output = tmp_path / "categories.png"
     runner.plot_category_breakdown(runner.load_channels_df(), output)
 
@@ -177,6 +179,7 @@ def test_plot_category_breakdown_writes_png(tmp_path: Path, channels_csv: Path) 
 
 
 def test_plot_monthly_traffic_writes_png(tmp_path: Path, monthly_csv: Path) -> None:
+    """Test that plot_monthly_traffic writes a PNG file."""
     output = tmp_path / "monthly.png"
     runner.plot_monthly_traffic(runner.load_monthly_df(), output)
 
@@ -187,6 +190,7 @@ def test_plot_monthly_traffic_writes_png(tmp_path: Path, monthly_csv: Path) -> N
 # End-to-end wiring
 # --------------------------------------------------------------------------- #
 
+
 def test_main_writes_three_charts(
     tmp_path: Path,
     channels_csv: Path,
@@ -196,9 +200,7 @@ def test_main_writes_three_charts(
     """``main()`` must produce all three expected PNGs in the org charts dir."""
     charts_dir = tmp_path / "charts"
     charts_dir.mkdir()
-    monkeypatch.setattr(
-        runner, "ensure_org_dirs", lambda _org: (tmp_path / "data", charts_dir)
-    )
+    monkeypatch.setattr(runner, "ensure_org_dirs", lambda _org: (tmp_path / "data", charts_dir))
 
     runner.main()
 

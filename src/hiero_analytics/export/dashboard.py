@@ -100,10 +100,7 @@ def _chart_caption_html(chart: Mapping, esc) -> str:
     info = f"<p class='chartnote'>{esc(note)}</p>" if note else ""
     if methodology:
         steps = "".join(f"<li>{esc(step)}</li>" for step in methodology)
-        info += (
-            "<details class='lbmethod'><summary>Step-by-step methodology</summary>"
-            f"<ol>{steps}</ol></details>"
-        )
+        info += f"<details class='lbmethod'><summary>Step-by-step methodology</summary><ol>{steps}</ol></details>"
     return f"{caption}<div class='lbinfo' hidden>{info}</div>"
 
 
@@ -144,18 +141,13 @@ def _figure_html(chart: Mapping, esc) -> str:
     open_scroll = "<div class='chartscroll'>" if wide else ""
     close_scroll = "</div>" if wide else ""
     if not chart.get("variants"):
-        img = (
-            f'<img src="{chart["src"]}" alt="{esc(chart["title"])}" '
-            f'loading="lazy" onclick="openLightbox(this)">'
-        )
+        img = f'<img src="{chart["src"]}" alt="{esc(chart["title"])}" loading="lazy" onclick="openLightbox(this)">'
         return f'<figure class="{fig_cls}">{open_scroll}{img}{close_scroll}{caption}</figure>'
     tabs, imgs = "", ""
     for i, variant in enumerate(chart["variants"]):
         active = " active" if i == 0 else ""
         hidden = "" if i == 0 else ' style="display:none"'
-        tabs += (
-            f'<button class="ctab{active}" onclick="chartTab(this,{i})">{esc(variant["label"])}</button>'
-        )
+        tabs += f'<button class="ctab{active}" onclick="chartTab(this,{i})">{esc(variant["label"])}</button>'
         imgs += (
             f'<img class="cimg" data-i="{i}" src="{variant["src"]}" alt="{esc(chart["title"])}" '
             f'loading="lazy" onclick="openLightbox(this)"{hidden}>'
@@ -186,12 +178,11 @@ def _section_html(section: Mapping, esc) -> str:
     rows: Sequence[Mapping] = section["rows"]
 
     head = "".join(
-        f'<th onclick="sortTable(\'{section_id}\',{i},this)">{esc(label)}</th>'
+        f"<th onclick=\"sortTable('{section_id}',{i},this)\">{esc(label)}</th>"
         for i, (_key, label) in enumerate(columns)
     )
     body = "".join(
-        "<tr>" + "".join(f"<td>{esc(_fmt(row.get(key)))}</td>" for key, _label in columns) + "</tr>"
-        for row in rows
+        "<tr>" + "".join(f"<td>{esc(_fmt(row.get(key)))}</td>" for key, _label in columns) + "</tr>" for row in rows
     )
     action = (
         f"<a class='dl' href=\"{esc(section['action_url'])}\" target='_blank' rel='noopener'>"
@@ -223,8 +214,7 @@ def _slug(value: str) -> str:
 
 def _metric_cards(metrics: Sequence[tuple[str, object]], esc) -> str:
     return "".join(
-        f"<div class='metric'><div class='label'>{esc(label)}</div>"
-        f"<div class='value'>{esc(_fmt(value))}</div></div>"
+        f"<div class='metric'><div class='label'>{esc(label)}</div><div class='value'>{esc(_fmt(value))}</div></div>"
         for label, value in metrics
     )
 
@@ -255,13 +245,8 @@ def _org_panels_html(mslug: str, org_tabs: Sequence[Mapping], esc) -> str:
             groups[-1][1].append(section)
 
         # Jump bar: a link per group (each group heading is itself collapsible).
-        links = "".join(
-            f"<a class='jbtn' href='#grp-{mslug}-{oslug}-{_slug(g)}'>{esc(g)}</a>" for g, _ in groups
-        )
-        jumpbar = (
-            f"<div class='jump'><span class='jlabel'>Jump to</span>{links}</div>"
-            if len(groups) > 1 else ""
-        )
+        links = "".join(f"<a class='jbtn' href='#grp-{mslug}-{oslug}-{_slug(g)}'>{esc(g)}</a>" for g, _ in groups)
+        jumpbar = f"<div class='jump'><span class='jlabel'>Jump to</span>{links}</div>" if len(groups) > 1 else ""
 
         # Each group is a collapsible <details>: click its heading to show/hide the
         # whole group. With only one group (e.g. a chart-only macro) the heading is
@@ -322,9 +307,7 @@ def build_dashboard_html(macros: Sequence[Mapping]) -> str:
         display = "" if i == 0 else "display:none"
         # The column glossary applies to tables only, so show it inside a macro
         # only when that macro actually has a table section (not chart-only macros).
-        has_table = any(
-            "charts" not in section for tab in macro["org_tabs"] for section in tab["sections"]
-        )
+        has_table = any("charts" not in section for tab in macro["org_tabs"] for section in tab["sections"])
         glossary = _GLOSSARY if has_table else ""
         macro_panels.append(
             f"<div class='macropanel' id='macro-{mslug}' style='{display}'>"

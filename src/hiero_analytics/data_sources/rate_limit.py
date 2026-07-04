@@ -24,6 +24,7 @@ JSON = dict[str, Any]
 # NORMALIZED SNAPSHOT
 # --------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class RateLimitSnapshot:
     """
@@ -37,9 +38,9 @@ class RateLimitSnapshot:
     only has to be written once.
     """
 
-    remaining: int | None = None    # requests / points left
-    limit: int | None = None        # total budget per window
-    cost: int | None = None         # GraphQL only: cost of this query
+    remaining: int | None = None  # requests / points left
+    limit: int | None = None  # total budget per window
+    cost: int | None = None  # GraphQL only: cost of this query
     reset_at: datetime | None = None  # aware UTC datetime when budget resets
 
     @classmethod
@@ -61,14 +62,10 @@ class RateLimitSnapshot:
             remaining = int(raw_remaining) if raw_remaining is not None else None
             reset_epoch = int(raw_reset) if raw_reset is not None else None
             limit = int(raw_limit) if raw_limit is not None else None
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # fmt: skip
             return None
 
-        reset_at = (
-            datetime.fromtimestamp(reset_epoch, tz=UTC)
-            if reset_epoch is not None
-            else None
-        )
+        reset_at = datetime.fromtimestamp(reset_epoch, tz=UTC) if reset_epoch is not None else None
 
         return cls(remaining=remaining, limit=limit, reset_at=reset_at)
 
@@ -106,6 +103,7 @@ class RateLimitSnapshot:
 # DECISION
 # --------------------------------------------------------
 
+
 class Action(Enum):
     """What the GitHubClient loop should do after reading rate-limit signals."""
 
@@ -135,6 +133,7 @@ class Action(Enum):
 @dataclass(frozen=True)
 class RateLimitDecision:
     """A decision returned by the policy after inspecting a snapshot or response.
+
     The GitHubClient loop will apply the decision by sleeping and/or retrying
     as needed.
     """
@@ -161,6 +160,7 @@ _GRAPHQL_ERROR_MIN_SLEEP = 60
 # --------------------------------------------------------
 # POLICY
 # --------------------------------------------------------
+
 
 class RateLimitPolicy:
     """
@@ -234,6 +234,7 @@ class RateLimitPolicy:
     ) -> RateLimitDecision:
         """
         Proactive back-off when GraphQL budget is critically low.
+
         Called after every successful GraphQL response.
         """
         if snapshot.remaining is None:

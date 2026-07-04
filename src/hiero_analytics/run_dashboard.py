@@ -124,8 +124,11 @@ def _chart_sections(org: str, chart_specs: list[dict]) -> list[dict]:
             charts.append(chart)
         if charts:
             section = {
-                "id": spec["id"], "title": spec["title"], "description": spec["description"],
-                "group": CHARTS_GROUP, "charts": charts,
+                "id": spec["id"],
+                "title": spec["title"],
+                "description": spec["description"],
+                "group": CHARTS_GROUP,
+                "charts": charts,
             }
             if spec.get("slideshow"):
                 section["slideshow"] = True
@@ -211,9 +214,7 @@ def main() -> None:
 
     output = OUTPUTS_DIR / "dashboard.html"
     output.write_text(build_dashboard_html(macros), encoding="utf-8")
-    logger.info(
-        "Wrote %s — %d macro(s): %s", output, len(macros), ", ".join(m["name"] for m in macros)
-    )
+    logger.info("Wrote %s — %d macro(s): %s", output, len(macros), ", ".join(m["name"] for m in macros))
 
 
 if __name__ == "__main__":

@@ -1,3 +1,5 @@
+"""Scatter plot with linear regression for the analytics design system."""
+
 from __future__ import annotations
 
 from pathlib import Path

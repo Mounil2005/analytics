@@ -102,9 +102,14 @@ def _plot_grouped_heatmap(df, label_col, ylabel, filename, title, data_dir, char
         return 0
     values, row_labels, col_labels = chart
     plot_heatmap(
-        values, row_labels=row_labels, col_labels=col_labels,
-        output_path=charts_dir / f"{filename}.png", title=title,
-        xlabel="Month", ylabel=ylabel, value_label="Weighted monthly activity score",
+        values,
+        row_labels=row_labels,
+        col_labels=col_labels,
+        output_path=charts_dir / f"{filename}.png",
+        title=title,
+        xlabel="Month",
+        ylabel=ylabel,
+        value_label="Weighted monthly activity score",
     )
     return len(row_labels)
 
@@ -115,8 +120,13 @@ def _pie_chart(distribution, label_col, value_col, center_label, title, output_p
     if folded.empty:
         return
     plot_pie(
-        folded, label_col=label_col, value_col=value_col, title=title, output_path=output_path,
-        center_label=center_label if donut else None, donut=donut,
+        folded,
+        label_col=label_col,
+        value_col=value_col,
+        title=title,
+        output_path=output_path,
+        center_label=center_label if donut else None,
+        donut=donut,
     )
 
 
@@ -126,8 +136,14 @@ def _distribution_chart(login_set, affiliations, data_dir, charts_dir, *, suffix
     save_dataframe(distribution, data_dir / f"affiliation_distribution{suffix}.csv")
     # A filled pie of the two largest employers + 'Other' — the concentration at a glance.
     _pie_chart(
-        distribution, "organisation", "maintainers", "maintainers", title,
-        charts_dir / f"affiliation_donut{suffix}.png", top_n=2, donut=False,
+        distribution,
+        "organisation",
+        "maintainers",
+        "maintainers",
+        title,
+        charts_dir / f"affiliation_donut{suffix}.png",
+        top_n=2,
+        donut=False,
     )
 
 
@@ -137,12 +153,21 @@ def _repo_composition_chart(role_lookup, affiliations, data_dir, charts_dir, *, 
     if segments:
         save_dataframe(composition, data_dir / f"repo_affiliation_composition{suffix}.csv")
         plot_and_save(
-            _percent_rows(composition, segments), plot_stacked_bar,
+            _percent_rows(composition, segments),
+            plot_stacked_bar,
             output_path=charts_dir / f"repo_affiliation_composition{suffix}.png",
-            x_col="repo", stack_cols=segments, labels=segments,
-            colors=_composition_colors(segments), title=title,
-            force_horizontal=False, rotate_x=90, annotate_totals=False, sort_categorical=False,
-            value_label="% of maintainers", reference_value=50, reference_label="majority (50%)",
+            x_col="repo",
+            stack_cols=segments,
+            labels=segments,
+            colors=_composition_colors(segments),
+            title=title,
+            force_horizontal=False,
+            rotate_x=90,
+            annotate_totals=False,
+            sort_categorical=False,
+            value_label="% of maintainers",
+            reference_value=50,
+            reference_label="majority (50%)",
         )
 
 
@@ -152,12 +177,21 @@ def _team_composition_chart(team_membership, affiliations, data_dir, charts_dir,
     if segments:
         save_dataframe(composition, data_dir / f"team_affiliation_composition{suffix}.csv")
         plot_and_save(
-            _percent_rows(composition, segments), plot_stacked_bar,
+            _percent_rows(composition, segments),
+            plot_stacked_bar,
             output_path=charts_dir / f"team_affiliation_composition{suffix}.png",
-            x_col="team", stack_cols=segments, labels=segments,
-            colors=_composition_colors(segments), title=title,
-            force_horizontal=False, rotate_x=90, annotate_totals=False, sort_categorical=False,
-            value_label="% of members", reference_value=50, reference_label="majority (50%)",
+            x_col="team",
+            stack_cols=segments,
+            labels=segments,
+            colors=_composition_colors(segments),
+            title=title,
+            force_horizontal=False,
+            rotate_x=90,
+            annotate_totals=False,
+            sort_categorical=False,
+            value_label="% of members",
+            reference_value=50,
+            reference_label="majority (50%)",
         )
 
 
@@ -165,9 +199,12 @@ def _single_employer_chart(team_membership, affiliations, charts_dir, *, suffix,
     """Single-employer teams by controlling org, as a bar (possibly active-filtered)."""
     diversity = build_team_affiliation_diversity(team_membership, affiliations)
     plot_and_save(
-        build_single_employer_team_counts(diversity), plot_bar,
+        build_single_employer_team_counts(diversity),
+        plot_bar,
         output_path=charts_dir / f"single_employer_teams_by_org{suffix}.png",
-        x_col="organisation", y_col="teams", title=title,
+        x_col="organisation",
+        y_col="teams",
+        title=title,
     )
 
 
@@ -175,13 +212,18 @@ def _single_employer_repo_chart(role_lookup, affiliations, charts_dir, *, suffix
     """Single-employer repositories by controlling org, as a bar (possibly active-filtered)."""
     diversity = build_repo_affiliation_diversity(role_lookup, affiliations)
     plot_and_save(
-        build_single_employer_repo_counts(diversity), plot_bar,
+        build_single_employer_repo_counts(diversity),
+        plot_bar,
         output_path=charts_dir / f"single_employer_repos_by_org{suffix}.png",
-        x_col="organisation", y_col="repos", title=title,
+        x_col="organisation",
+        y_col="repos",
+        title=title,
     )
 
 
-def _write_activity_views(maintainers, role_lookup, team_membership, affiliations, org_data_dir, org_charts_dir, *, all_summary):
+def _write_activity_views(
+    maintainers, role_lookup, team_membership, affiliations, org_data_dir, org_charts_dir, *, all_summary
+):
     """Activity-driven views: active-maintainer diversity + the per-org activity heatmap.
 
     The roster includes people who've gone quiet; the active view measures who
@@ -191,14 +233,18 @@ def _write_activity_views(maintainers, role_lookup, team_membership, affiliation
     """
     client = GitHubClient()
     records = load_or_fetch(
-        "contributor_activity", ORG, ContributorActivityRecord,
+        "contributor_activity",
+        ORG,
+        ContributorActivityRecord,
         lambda: fetch_org_contributor_activity_graphql(client, org=ORG, lookback_days=None),
     )
     if not records:
         logger.info("No activity data available; skipping active-maintainer + heatmap views")
         return
     label_events = load_or_fetch(
-        "issue_label_events", ORG, IssueTimelineEventRecord,
+        "issue_label_events",
+        ORG,
+        IssueTimelineEventRecord,
         lambda: fetch_org_issue_label_events_graphql(client, org=ORG),
     )
 
@@ -210,37 +256,58 @@ def _write_activity_views(maintainers, role_lookup, team_membership, affiliation
     summary = summarize_affiliation(classified)
     save_dataframe(classified, org_data_dir / "maintainer_affiliations_active.csv")
     logger.info(
-        "Active maintainers (%dd): %d of %d on the roster; largest is %s at %d%% (roster %d%%); "
-        "HHI %d (roster %d)",
-        ROLE_ACTIVE_DAYS, summary["maintainers"], all_summary["maintainers"],
-        summary["top_org"], summary["top_share_pct"], all_summary["top_share_pct"],
-        summary["hhi"], all_summary["hhi"],
+        "Active maintainers (%dd): %d of %d on the roster; largest is %s at %d%% (roster %d%%); HHI %d (roster %d)",
+        ROLE_ACTIVE_DAYS,
+        summary["maintainers"],
+        all_summary["maintainers"],
+        summary["top_org"],
+        summary["top_share_pct"],
+        all_summary["top_share_pct"],
+        summary["hhi"],
+        all_summary["hhi"],
     )
     active_distribution = build_affiliation_distribution(classified)
     save_dataframe(active_distribution, org_data_dir / "affiliation_distribution_active.csv")
     _pie_chart(
-        active_distribution, "organisation", "maintainers", "active maintainers",
+        active_distribution,
+        "organisation",
+        "maintainers",
+        "active maintainers",
         f"{ORG} — active maintainer diversity (activity in the last {ROLE_ACTIVE_DAYS} days)",
-        org_charts_dir / "affiliation_donut_active.png", top_n=2, donut=False,
+        org_charts_dir / "affiliation_donut_active.png",
+        top_n=2,
+        donut=False,
     )
 
     # 2. Activity heatmaps at three aggregation levels — by organisation, team, and
     # repository — reusing the contributor heatmap's weighting/windowing/bot-exclusion.
     contributor_heatmap = build_activity_heatmap_dataframe(records, role_lookup)
     n_org = _plot_grouped_heatmap(
-        build_org_activity_heatmap(contributor_heatmap, affiliations), "organisation", "Organisation",
-        "org_activity_heatmap", f"{ORG} — organisation activity heatmap (weighted monthly activity)",
-        org_data_dir, org_charts_dir,
+        build_org_activity_heatmap(contributor_heatmap, affiliations),
+        "organisation",
+        "Organisation",
+        "org_activity_heatmap",
+        f"{ORG} — organisation activity heatmap (weighted monthly activity)",
+        org_data_dir,
+        org_charts_dir,
     )
     _plot_grouped_heatmap(
-        build_team_activity_heatmap(contributor_heatmap, team_membership), "team", "Team",
-        "team_activity_heatmap", f"{ORG} — team activity heatmap (weighted monthly activity)",
-        org_data_dir, org_charts_dir,
+        build_team_activity_heatmap(contributor_heatmap, team_membership),
+        "team",
+        "Team",
+        "team_activity_heatmap",
+        f"{ORG} — team activity heatmap (weighted monthly activity)",
+        org_data_dir,
+        org_charts_dir,
     )
     _plot_grouped_heatmap(
-        build_repo_activity_heatmap(records), "repo", "Repository",
-        "repo_activity_heatmap", f"{ORG} — repository activity heatmap (weighted monthly activity)",
-        org_data_dir, org_charts_dir,
+        build_repo_activity_heatmap(records),
+        "repo",
+        "Repository",
+        "repo_activity_heatmap",
+        f"{ORG} — repository activity heatmap (weighted monthly activity)",
+        org_data_dir,
+        org_charts_dir,
     )
     logger.info("Activity heatmaps: %d organisations, plus team and repository views", n_org)
 
@@ -256,19 +323,33 @@ def _write_activity_views(maintainers, role_lookup, team_membership, affiliation
     active_team_membership = {t: {m for m in members if m in active_members} for t, members in team_membership.items()}
 
     _repo_composition_chart(
-        active_role_lookup, affiliations, org_data_dir, org_charts_dir, suffix="_active",
+        active_role_lookup,
+        affiliations,
+        org_data_dir,
+        org_charts_dir,
+        suffix="_active",
         title=f"{ORG} — active maintainer organisation mix by repository (last {ROLE_ACTIVE_DAYS}d)",
     )
     _single_employer_chart(
-        active_team_membership, affiliations, org_charts_dir, suffix="_active",
+        active_team_membership,
+        affiliations,
+        org_charts_dir,
+        suffix="_active",
         title=f"{ORG} — single-employer teams among active members, by organisation",
     )
     _single_employer_repo_chart(
-        active_role_lookup, affiliations, org_charts_dir, suffix="_active",
+        active_role_lookup,
+        affiliations,
+        org_charts_dir,
+        suffix="_active",
         title=f"{ORG} — single-employer repositories among active maintainers, by organisation",
     )
     _team_composition_chart(
-        active_team_membership, affiliations, org_data_dir, org_charts_dir, suffix="_active",
+        active_team_membership,
+        affiliations,
+        org_data_dir,
+        org_charts_dir,
+        suffix="_active",
         title=f"{ORG} — active organisation mix by governance team (last {ROLE_ACTIVE_DAYS}d)",
     )
 
@@ -296,32 +377,56 @@ def main() -> None:
     summary = summarize_affiliation(classified)
     logger.info(
         "Affiliation coverage: %d affiliated, %d independent, %d unknown of %d maintainers",
-        summary["affiliated"], summary["independent"], summary["unknown"], summary["maintainers"],
+        summary["affiliated"],
+        summary["independent"],
+        summary["unknown"],
+        summary["maintainers"],
     )
     logger.info(
         "Concentration: HHI %d across %d employers; largest is %s at %d%%",
-        summary["hhi"], summary["distinct_orgs"], summary["top_org"], summary["top_share_pct"],
+        summary["hhi"],
+        summary["distinct_orgs"],
+        summary["top_org"],
+        summary["top_share_pct"],
     )
 
     # All-population charts (the "All" tab in the dashboard).
     _distribution_chart(
-        maintainers, affiliations, org_data_dir, org_charts_dir, suffix="",
+        maintainers,
+        affiliations,
+        org_data_dir,
+        org_charts_dir,
+        suffix="",
         title=f"{ORG} — maintainer organisation diversity (distinct maintainers by employer)",
     )
     _repo_composition_chart(
-        role_lookup, affiliations, org_data_dir, org_charts_dir, suffix="",
+        role_lookup,
+        affiliations,
+        org_data_dir,
+        org_charts_dir,
+        suffix="",
         title=f"{ORG} — maintainer organisation mix by repository",
     )
     _single_employer_chart(
-        team_membership, affiliations, org_charts_dir, suffix="",
+        team_membership,
+        affiliations,
+        org_charts_dir,
+        suffix="",
         title=f"{ORG} — single-employer governance teams, by controlling organisation",
     )
     _single_employer_repo_chart(
-        role_lookup, affiliations, org_charts_dir, suffix="",
+        role_lookup,
+        affiliations,
+        org_charts_dir,
+        suffix="",
         title=f"{ORG} — single-employer repositories, by controlling organisation",
     )
     _team_composition_chart(
-        team_membership, affiliations, org_data_dir, org_charts_dir, suffix="",
+        team_membership,
+        affiliations,
+        org_data_dir,
+        org_charts_dir,
+        suffix="",
         title=f"{ORG} — organisation mix by governance team (teams with 4+ resolved members)",
     )
 
@@ -331,20 +436,28 @@ def main() -> None:
     if not repo_diversity.empty:
         logger.info(
             "Repo diversity: %d of %d repos are single-employer (one org holds all maintainer seats)",
-            int((repo_diversity["distinct_orgs"] <= 1).sum()), len(repo_diversity),
+            int((repo_diversity["distinct_orgs"] <= 1).sum()),
+            len(repo_diversity),
         )
     team_diversity = build_team_affiliation_diversity(team_membership, affiliations)
     save_dataframe(team_diversity, org_data_dir / "team_affiliation_diversity.csv")
     if not team_diversity.empty:
         logger.info(
             "Team diversity: %d of %d teams are single-employer among resolved members (capture risk)",
-            int(team_diversity["single_employer"].sum()), len(team_diversity),
+            int(team_diversity["single_employer"].sum()),
+            len(team_diversity),
         )
 
     # Activity-driven views: active-core diversity, the org activity heatmap, and the
     # "Active" tab variants of the charts above.
     _write_activity_views(
-        maintainers, role_lookup, team_membership, affiliations, org_data_dir, org_charts_dir, all_summary=summary,
+        maintainers,
+        role_lookup,
+        team_membership,
+        affiliations,
+        org_data_dir,
+        org_charts_dir,
+        all_summary=summary,
     )
 
     logger.info("Organisation-diversity analytics complete")

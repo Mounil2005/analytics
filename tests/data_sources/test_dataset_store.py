@@ -42,6 +42,7 @@ def _updated(record: _Record) -> datetime | None:
 # merge_records
 # ---------------------------------------------------------------------------
 
+
 def test_merge_upserts_by_key_incoming_wins():
     """Incoming records replace existing ones by key; new keys are added."""
     existing = [_rec("a", 1, 1), _rec("b", 2, 1)]
@@ -62,6 +63,7 @@ def test_merge_keeps_existing_when_no_incoming():
 # ---------------------------------------------------------------------------
 # save / load round-trip
 # ---------------------------------------------------------------------------
+
 
 def test_save_load_round_trip_preserves_records_and_watermark(tmp_path):
     """Records and watermark survive a save/load round-trip as typed values."""
@@ -96,15 +98,14 @@ def test_load_returns_none_on_corrupt_watermark(tmp_path):
     """An unparseable fetched_through is treated as a cache miss, not a crash."""
     path = tmp_path / "issues.json"
     save_dataset(path, [_rec("a", 1, 1)], datetime(2024, 1, 1, tzinfo=UTC))
-    path.write_text(
-        path.read_text().replace('"fetched_through": "2024-01-01', '"fetched_through": "not-a-date')
-    )
+    path.write_text(path.read_text().replace('"fetched_through": "2024-01-01', '"fetched_through": "not-a-date'))
     assert load_dataset(path, _Record) is None
 
 
 # ---------------------------------------------------------------------------
 # fetch_incremental
 # ---------------------------------------------------------------------------
+
 
 def test_first_run_does_full_fetch_and_stores_watermark(tmp_path):
     """With no stored dataset, a full fetch runs and the max updated_at is stored."""

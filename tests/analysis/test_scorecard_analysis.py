@@ -1,11 +1,13 @@
+"""Tests for the scorecard_analysis module."""
+
 import pandas as pd
 
-from hiero_analytics.data_sources.models import ScorecardRecord
 from hiero_analytics.analysis.scorecard_analysis import (
-    scorecard_to_dataframe,
+    CHECK_COLUMNS,
     scorecard_stacked_dataframe,
-    CHECK_COLUMNS
+    scorecard_to_dataframe,
 )
+from hiero_analytics.data_sources.models import ScorecardRecord
 
 
 def test_scorecard_to_dataframe_empty():
@@ -68,7 +70,6 @@ def test_scorecard_stacked_dataframe_with_checks():
 
     row = df.iloc[0]
 
-  
     assert row["repo"] == "repo1"
     assert row["score"] == 8.0
 
@@ -78,4 +79,3 @@ def test_scorecard_stacked_dataframe_with_checks():
     for col in CHECK_COLUMNS:
         if col not in ["Maintained", "Code-Review"]:
             assert row[col] == 0
-

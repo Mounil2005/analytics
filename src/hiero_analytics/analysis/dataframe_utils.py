@@ -29,6 +29,7 @@ def repos_to_dataframe(records: list[RepositoryRecord]) -> pd.DataFrame:
         ["repo", "pushed_at", "language"],
     )
 
+
 # PEP 695 type parameters are intentionally avoided here because the package
 # supports Python 3.11.
 T = TypeVar("T")
@@ -155,9 +156,4 @@ def count_by(df: pd.DataFrame, *cols: str) -> pd.DataFrame:
     if df.empty:
         return pd.DataFrame(columns=[*cols, "count"])
 
-    return (
-        df.groupby(list(cols))
-        .size()
-        .reset_index(name="count")
-        .sort_values(list(cols))
-    )
+    return df.groupby(list(cols)).size().reset_index(name="count").sort_values(list(cols))

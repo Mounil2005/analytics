@@ -9,10 +9,11 @@ setup_logging(modules="hiero_analytics")
 
 ORGANIZATION = ORG
 
+
 def fetch_repos_in_org() -> None:
     """Fetch and print repositories for the configured organization."""
     client = GitHubClient()
-    
+
     repos = fetch_org_repos_graphql(client, ORGANIZATION)
 
     print(f"Found {len(repos)} repositories in {ORGANIZATION}\n")

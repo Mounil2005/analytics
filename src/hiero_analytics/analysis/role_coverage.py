@@ -149,11 +149,7 @@ def build_repo_role_coverage(
         return coverage
 
     coverage["_active"] = (coverage["status"] == "active").astype(int)
-    return (
-        coverage.sort_values(["_active", "total_actions", "user"])
-        .drop(columns="_active")
-        .reset_index(drop=True)
-    )
+    return coverage.sort_values(["_active", "total_actions", "user"]).drop(columns="_active").reset_index(drop=True)
 
 
 def find_unbadged_role_work(

@@ -51,11 +51,10 @@ class PartialOrgFetchError(Exception):
 
     def __init__(self, records: list, failed_repos: list | None = None) -> None:
         """Carry the records that arrived plus the repos still failing."""
-        super().__init__(
-            f"partial org fetch: {len(failed_repos or [])} repo(s) still failing"
-        )
+        super().__init__(f"partial org fetch: {len(failed_repos or [])} repo(s) still failing")
         self.records = records
         self.failed_repos = failed_repos or []
+
 
 # PEP 695 type parameters are intentionally avoided here because the package
 # supports Python 3.11.
@@ -94,9 +93,7 @@ def save_dataset(path: Path, records: list[T], fetched_through: datetime) -> Non
         "fetched_through": fetched_through.isoformat(),
         "records": [serialize_record(record) for record in records],
     }
-    with NamedTemporaryFile(
-        "w", dir=path.parent, delete=False, encoding="utf-8"
-    ) as tmp:
+    with NamedTemporaryFile("w", dir=path.parent, delete=False, encoding="utf-8") as tmp:
         json.dump(payload, tmp, indent=2, sort_keys=True)
         tmp_path = Path(tmp.name)
     tmp_path.replace(path)
@@ -108,7 +105,7 @@ def load_dataset(path: Path, model_class: type[T]) -> tuple[list[T], datetime] |
         return None
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # fmt: skip
         return None
     if payload.get("version") != DATASET_VERSION:
         return None
@@ -119,12 +116,9 @@ def load_dataset(path: Path, model_class: type[T]) -> tuple[list[T], datetime] |
     # timestamp) is treated as a cache miss rather than crashing the fetch — the
     # caller then does a full fetch and rewrites a clean dataset.
     try:
-        records = [
-            deserialize_record(model_class, record)
-            for record in payload.get("records", [])
-        ]
+        records = [deserialize_record(model_class, record) for record in payload.get("records", [])]
         fetched_through = datetime.fromisoformat(raw_through)
-    except (TypeError, ValueError, KeyError, AttributeError):
+    except (TypeError, ValueError, KeyError, AttributeError):  # fmt: skip
         return None
     return records, fetched_through
 
@@ -184,11 +178,7 @@ def fetch_incremental(  # noqa: UP047
     """
     current = now or datetime.now(UTC)
     state = load_dataset(path, model_class)
-    is_stale = (
-        full_refresh_after is not None
-        and state is not None
-        and state[1] < current - full_refresh_after
-    )
+    is_stale = full_refresh_after is not None and state is not None and state[1] < current - full_refresh_after
     held_watermark: datetime | None = None
     if state is None or force_full or is_stale:
         try:

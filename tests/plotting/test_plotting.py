@@ -43,9 +43,7 @@ def test_adaptive_legend_placement_many_items_move_right():
 
 def test_adaptive_legend_placement_honors_bottom_overrides():
     """The bottom offset/reserved-space params override the defaults."""
-    placement = adaptive_legend_placement(
-        2, bottom_anchor=(0.5, -0.18), bottom_rect_bottom=0.12
-    )
+    placement = adaptive_legend_placement(2, bottom_anchor=(0.5, -0.18), bottom_rect_bottom=0.12)
     assert placement["legend_bbox_to_anchor"] == (0.5, -0.18)
     assert placement["layout_rect"] == (0.0, 0.12, 1.0, 1.0)
 
@@ -165,9 +163,7 @@ def test_plot_date_line_writes_chart_with_datetime_x_axis(tmp_path):
     """``plot_date_line`` should preserve datetime axes (unlike ``plot_line``)."""
     monthly_df = pd.DataFrame(
         {
-            "month": pd.to_datetime(
-                ["2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01"]
-            ),
+            "month": pd.to_datetime(["2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01"]),
             "messages": [12, 30, 22, 41, 75],
         }
     )

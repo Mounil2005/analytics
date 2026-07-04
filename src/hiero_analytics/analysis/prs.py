@@ -1,3 +1,5 @@
+"""Transformations and filters for pull request difficulty records."""
+
 from __future__ import annotations
 
 import pandas as pd
@@ -20,6 +22,7 @@ _PR_COLUMNS = [
 def prs_to_dataframe(
     records: list[PullRequestDifficultyRecord],
 ) -> pd.DataFrame:
+    """Convert a list of PullRequestDifficultyRecord objects into a DataFrame."""
     return records_to_dataframe(
         records,
         lambda r: {
@@ -36,20 +39,15 @@ def prs_to_dataframe(
 
 
 def filter_gfi_prs(df: pd.DataFrame) -> pd.DataFrame:
+    """Filter PR DataFrame to only rows linked to onboarding issues."""
     if df.empty:
         return df
 
-    return df[
-        df["issue_labels"].apply(
-            lambda xs: ALL_ONBOARDING.matches(set(xs or []))
-        )
-    ]
+    return df[df["issue_labels"].apply(lambda xs: ALL_ONBOARDING.matches(set(xs or [])))]
 
 
 def first_time_contributors(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Keep only first merged PR per contributor.
-    """
+    """Keep only first merged PR per contributor."""
     if df.empty:
         return df
 

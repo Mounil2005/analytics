@@ -9,6 +9,7 @@ setup_logging(modules="hiero_analytics")
 
 ORGANIZATION = ORG
 
+
 def main() -> None:
     """Fetch and report issue counts for the configured organization."""
     client = GitHubClient()

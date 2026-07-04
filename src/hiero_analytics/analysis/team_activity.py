@@ -70,9 +70,7 @@ def build_team_activity_summary(
     all-time). Teams with no recent activity sort first.
     """
     by_login = (
-        {str(row.contributor).lower(): row for row in org_profiles.itertuples()}
-        if not org_profiles.empty
-        else {}
+        {str(row.contributor).lower(): row for row in org_profiles.itertuples()} if not org_profiles.empty else {}
     )
 
     rows = []
@@ -147,8 +145,4 @@ def build_team_activity_by_repo(
         return table
 
     table["_total"] = table[list(_CONTRIB_COLS)].sum(axis=1)
-    return (
-        table.sort_values(["team", "_total"], ascending=[True, False])
-        .drop(columns="_total")
-        .reset_index(drop=True)
-    )
+    return table.sort_values(["team", "_total"], ascending=[True, False]).drop(columns="_total").reset_index(drop=True)
