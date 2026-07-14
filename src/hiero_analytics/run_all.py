@@ -32,11 +32,13 @@ from hiero_analytics.run_affiliation_org import main as run_affiliation
 from hiero_analytics.run_codeowner_and_runner import main as run_codeowner
 from hiero_analytics.run_contributor_activity_org import main as run_contributor_activity
 from hiero_analytics.run_contributor_heatmap_org import main as run_contributor_heatmap
+from hiero_analytics.run_contributor_profiles_repo import main as run_contributor_profiles
 from hiero_analytics.run_dashboard import main as run_dashboard
 from hiero_analytics.run_difficulty_org_for_repo import main as run_difficulty
 from hiero_analytics.run_difficulty_over_time_org import main as run_difficulty_over_time
 from hiero_analytics.run_hiero_hackers_org import main as run_hiero_hackers
 from hiero_analytics.run_maintainer_pipeline_org import main as run_maintainer
+from hiero_analytics.run_onboarding_signal_for_repo import run as run_onboarding
 from hiero_analytics.run_role_coverage_org import main as run_role_coverage
 from hiero_analytics.run_scorecard_for_org import main as run_scorecard
 
@@ -48,6 +50,8 @@ logger = logging.getLogger(__name__)
 PIPELINES: list[tuple[str, Callable[[], None]]] = [
     ("difficulty", run_difficulty),
     ("difficulty_over_time", run_difficulty_over_time),
+    ("onboarding", run_onboarding),
+    ("contributor_profiles", run_contributor_profiles),
     ("maintainer_pipeline", run_maintainer),
     ("contributor_activity", run_contributor_activity),
     ("contributor_heatmap", run_contributor_heatmap),
