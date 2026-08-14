@@ -57,7 +57,13 @@ function referenced(manifest: Manifest) {
       }
     }
   }
-  return { documents, charts, downloads };
+  // Deduplicated: two orgs may legitimately point at one document or chart, and
+  // neither writing it twice nor naming it twice in a failure helps anyone.
+  return {
+    documents: [...new Set(documents)],
+    charts: [...new Set(charts)],
+    downloads: [...new Set(downloads)],
+  };
 }
 
 async function write(path: string, body: string | Buffer): Promise<void> {
@@ -87,20 +93,34 @@ export async function buildSite(): Promise<string> {
   // route, and a write that silently landed somewhere else. Without this a
   // gap just renders a smaller dashboard, which every assertion below would
   // happily pass.
-  const missing = [
-    ...documents
-      .filter((file) => !existsSync(join(API_DIR, file)))
-      .map((file) => `data/api/v1/${file}`),
+  //
+  // The two kinds of gap have different causes, so they are reported apart: a
+  // document is missing because `ROUTES` lacks it, while a chart or download is
+  // missing only if the emitting loops above have fallen out of step with what
+  // `referenced()` walks. One remedy pointed at both would send the reader to
+  // the wrong file half the time.
+  const missingDocuments = documents.filter((file) => !existsSync(join(API_DIR, file)));
+  const missingPlaceholders = [
     ...downloads
       .filter((file) => !existsSync(join(API_DIR, file)))
       .map((file) => `data/api/v1/${file}`),
     ...charts.filter((file) => !existsSync(join(SITE_DIR, file))),
   ];
-  if (missing.length > 0) {
-    throw new Error(
-      `the fixture manifest points at files the staged site does not have:\n  ${missing.join('\n  ')}\n` +
-        `Add the missing entries to ROUTES in src/test/fixtures.ts.`,
-    );
+  if (missingDocuments.length > 0 || missingPlaceholders.length > 0) {
+    const report = ['the fixture manifest points at files the staged site does not have:'];
+    if (missingDocuments.length > 0) {
+      report.push(
+        '  documents, which are served from ROUTES — add them in src/test/fixtures.ts:',
+        ...missingDocuments.map((file) => `    data/api/v1/${file}`),
+      );
+    }
+    if (missingPlaceholders.length > 0) {
+      report.push(
+        '  placeholders, which this script writes — its emit loops no longer cover everything referenced():',
+        ...missingPlaceholders.map((file) => `    ${file}`),
+      );
+    }
+    throw new Error(report.join('\n'));
   }
 
   return SITE_DIR;

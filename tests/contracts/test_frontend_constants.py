@@ -20,7 +20,7 @@ CI rather than shipping.
 
 from __future__ import annotations
 
-import json
+import ast
 import re
 from pathlib import Path
 
@@ -30,8 +30,11 @@ from hiero_analytics.export.csv_safety import FORMULA_PREFIXES
 
 WEB_SRC = Path(__file__).resolve().parents[2] / "web" / "src"
 
-# A double-quoted TypeScript string, escapes included, so `"\t"` survives whole.
-_STRING = re.compile(r'"(?:[^"\\]|\\.)*"')
+# A TypeScript string literal in either quote style. Prettier rewrote web/ to
+# single quotes, so a pattern that knew only double ones would match nothing.
+# The mirrored declarations hold plain tokens and escapes like a tab, never an
+# embedded quote of the same kind, so this needs no escape handling.
+_STRING = re.compile("'[^']*'|\"[^\"]*\"")
 
 COLUMN_FORMAT_UNION = re.compile(r"export type ColumnFormat\s*=(?P<body>[^;]*);")
 FORMULA_PREFIX_ARRAY = re.compile(r"const FORMULA_PREFIXES\s*=\s*\[(?P<body>[^\]]*)\]")
@@ -58,9 +61,10 @@ def _literals(source: str, declaration: re.Pattern[str], what: str) -> set[str]:
     )
     found = _STRING.findall(match.group("body"))
     assert found, f"the {what} declaration parsed but held no string literals"
-    # A TypeScript double-quoted literal is a JSON string, so this decodes
-    # `\t` and friends to the characters Python holds.
-    return {json.loads(literal) for literal in found}
+    # TypeScript and Python spell these literals the same way, escapes included,
+    # so evaluating them as Python literals yields the exact characters the
+    # Python side holds. `literal_eval` evaluates nothing but literals.
+    return {ast.literal_eval(literal) for literal in found}
 
 
 def test_column_format_union_matches_the_python_spec() -> None:
@@ -114,8 +118,24 @@ def test_heat_ramp_matches_the_python_palette() -> None:
         "no --heat-N custom properties found in `:root`. If they were renamed, "
         f"update the pattern in {Path(__file__).name} rather than deleting this test."
     )
-    ramp = [colour.lower() for _, colour in sorted(buckets, key=lambda found: int(found[0]))]
+    ordered = sorted(buckets, key=lambda found: int(found[0]))
 
+    # The identifiers matter as much as the colours. Sorting then discarding them
+    # would let `--heat-1..4` plus `--heat-6` line up against a five-colour ramp
+    # and pass, while the matrix's `.heat-5` cell points at a variable that does
+    # not exist. Duplicates and an off-by-one start fail here for the same reason.
+    identifiers = [int(bucket) for bucket, _ in ordered]
+    expected_identifiers = list(range(1, len(HIP_EVIDENCE_RAMP) + 1))
+    assert identifiers == expected_identifiers, (
+        "web/src/app.css declares --heat-N buckets that do not line up with "
+        "config.charts.HIP_EVIDENCE_RAMP.\n"
+        f"  css buckets: {identifiers}\n"
+        f"  expected:    {expected_identifiers}\n"
+        "The matrix renders one class per bucket, so a gap or a renumbering leaves "
+        "a cell pointing at a custom property nothing defines."
+    )
+
+    ramp = [colour.lower() for _, colour in ordered]
     assert ramp == [colour.lower() for colour in HIP_EVIDENCE_RAMP], (
         "web/src/app.css --heat-N has drifted from config.charts.HIP_EVIDENCE_RAMP.\n"
         f"  css:    {ramp}\n"
