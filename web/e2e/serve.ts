@@ -35,7 +35,15 @@ await buildSite();
 
 const server = createServer((request, response) => {
   const { pathname } = new URL(request.url ?? '/', `http://${HOST}:${PORT}`);
-  const requested = decodeURIComponent(pathname).replace(/^\/+/, '');
+  let requested: string;
+  try {
+    requested = decodeURIComponent(pathname).replace(/^\/+/, '');
+  } catch {
+    // A malformed escape such as `%E0%A4%A` throws; left uncaught it would take
+    // the whole server down mid-run instead of failing that one request.
+    response.writeHead(400).end('bad request');
+    return;
+  }
   const file = resolve(SITE_DIR, requested === '' ? 'index.html' : requested);
 
   // Nothing outside the staged site is servable, whatever the path traversal.

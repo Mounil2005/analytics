@@ -32,7 +32,18 @@ interface Watch {
 async function watchPage(page: Page, baseUrl: string): Promise<Watch> {
   const problems: string[] = [];
   const external: string[] = [];
-  const isLocal = (url: string) => url.startsWith(baseUrl);
+  // Compared by origin rather than string prefix: `http://127.0.0.1:4173@evil.test/`
+  // starts with the base URL but resolves to `evil.test`, so a prefix test would
+  // wave through the very thing this guard exists to catch. Anything unparseable
+  // counts as off-origin too.
+  const baseOrigin = new URL(baseUrl).origin;
+  const isLocal = (url: string) => {
+    try {
+      return new URL(url).origin === baseOrigin;
+    } catch {
+      return false;
+    }
+  };
 
   page.on('console', (message) => {
     if (message.type() === 'error') problems.push(`console error: ${message.text()}`);
