@@ -237,9 +237,9 @@
    "maintainers": 6,
    "distinct_orgs": 2,
    "top_org": "BlockyDevs",
-   "top_org_pct": 60,
+   "top_org_pct": 67,
    "independent": 0,
-   "unknown": 1,
+   "unknown": 0,
    "organisations": "BlockyDevs, Hashgraph"
   },
   {
@@ -447,14 +447,14 @@
    "maintainers": 25,
    "distinct_orgs": 7,
    "top_org": "Hashgraph",
-   "top_org_pct": 38,
+   "top_org_pct": 36,
    "independent": 1,
-   "unknown": 1,
+   "unknown": 0,
    "organisations": "Hashgraph, Linux Foundation, LimeChain, Hgraph, Hashgraph Online, 8bees, Hedera"
   }
  ],
  "row_count": 41,
- "generated_at": "2026-08-16T09:27:45.635187+00:00",
+ "generated_at": "2026-08-21T09:34:26.954303+00:00",
  "stale": false,
  "macro": "Governance"
 }

@@ -60,6 +60,13 @@
    "triage": 15
   },
   {
+   "repo": "hiero-sdk-cpp",
+   "maintainers": 3,
+   "active_maintainers": 0,
+   "committers": 1,
+   "triage": 15
+  },
+  {
    "repo": "tsc-eligibility-check",
    "maintainers": 3,
    "active_maintainers": 0,
@@ -93,13 +100,6 @@
    "active_maintainers": 1,
    "committers": 1,
    "triage": 0
-  },
-  {
-   "repo": "hiero-sdk-cpp",
-   "maintainers": 3,
-   "active_maintainers": 1,
-   "committers": 1,
-   "triage": 15
   },
   {
    "repo": "heka-identity-platform",
@@ -152,7 +152,7 @@
   }
  ],
  "row_count": 17,
- "generated_at": "2026-08-16T09:27:35.382470+00:00",
+ "generated_at": "2026-08-21T09:34:18.650615+00:00",
  "stale": false,
  "periods": {
   "7d": [
@@ -199,17 +199,17 @@
     "triage": 15
    },
    {
-    "repo": "hiero-mirror-node-explorer",
+    "repo": "tsc-eligibility-check",
     "maintainers": 3,
     "active_maintainers": 0,
     "committers": 0,
     "triage": 0
    },
    {
-    "repo": "tsc-eligibility-check",
-    "maintainers": 3,
+    "repo": "hiero-improvement-proposals",
+    "maintainers": 4,
     "active_maintainers": 0,
-    "committers": 0,
+    "committers": 77,
     "triage": 0
    },
    {
@@ -225,13 +225,6 @@
     "active_maintainers": 0,
     "committers": 4,
     "triage": 12
-   },
-   {
-    "repo": "heka-identity-platform",
-    "maintainers": 4,
-    "active_maintainers": 0,
-    "committers": 3,
-    "triage": 0
    },
    {
     "repo": "hiero-sdk-rust",
@@ -297,6 +290,20 @@
     "triage": 2
    },
    {
+    "repo": ".github",
+    "maintainers": 16,
+    "active_maintainers": 0,
+    "committers": 0,
+    "triage": 0
+   },
+   {
+    "repo": "hiero",
+    "maintainers": 16,
+    "active_maintainers": 0,
+    "committers": 0,
+    "triage": 0
+   },
+   {
     "repo": "tsc",
     "maintainers": 16,
     "active_maintainers": 0,
@@ -311,6 +318,13 @@
     "triage": 6
    },
    {
+    "repo": "heka-identity-platform",
+    "maintainers": 4,
+    "active_maintainers": 1,
+    "committers": 3,
+    "triage": 0
+   },
+   {
     "repo": "hiero-sdk-go",
     "maintainers": 5,
     "active_maintainers": 1,
@@ -320,27 +334,6 @@
    {
     "repo": "awesome-contributions",
     "maintainers": 7,
-    "active_maintainers": 1,
-    "committers": 0,
-    "triage": 0
-   },
-   {
-    "repo": "hiero-contracts",
-    "maintainers": 12,
-    "active_maintainers": 1,
-    "committers": 28,
-    "triage": 3
-   },
-   {
-    "repo": ".github",
-    "maintainers": 16,
-    "active_maintainers": 1,
-    "committers": 0,
-    "triage": 0
-   },
-   {
-    "repo": "hiero",
-    "maintainers": 16,
     "active_maintainers": 1,
     "committers": 0,
     "triage": 0
@@ -458,13 +451,6 @@
     "active_maintainers": 0,
     "committers": 0,
     "triage": 0
-   },
-   {
-    "repo": "sdk-collaboration-hub",
-    "maintainers": 4,
-    "active_maintainers": 1,
-    "committers": 8,
-    "triage": 6
    },
    {
     "repo": "hiero-sdk-js",
