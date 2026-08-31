@@ -312,12 +312,6 @@
    "method": "automated"
   },
   {
-   "login": "filev94",
-   "organisation": "LimeChain",
-   "status": "affiliated",
-   "method": "automated"
-  },
-  {
    "login": "gerbert-vandenberghe",
    "organisation": "FundRequest",
    "status": "affiliated",
@@ -450,12 +444,6 @@
    "method": "automated"
   },
   {
-   "login": "kselveliev",
-   "organisation": "LimeChain",
-   "status": "affiliated",
-   "method": "automated"
-  },
-  {
    "login": "litt3",
    "organisation": null,
    "status": "unknown",
@@ -559,12 +547,6 @@
   },
   {
    "login": "naydenovn",
-   "organisation": "LimeChain",
-   "status": "affiliated",
-   "method": "automated"
-  },
-  {
-   "login": "nickeynikolovv",
    "organisation": "LimeChain",
    "status": "affiliated",
    "method": "automated"
@@ -822,12 +804,12 @@
    "method": "automated"
   }
  ],
- "row_count": 133,
+ "row_count": 130,
  "action": {
   "url": "https://github.com/hiero-hackers/analytics/issues",
   "label": "Suggest a correction"
  },
- "generated_at": "2026-08-26T09:40:27.452425+00:00",
+ "generated_at": "2026-08-31T16:43:01.229446+00:00",
  "stale": false,
  "macro": "Governance"
 }
