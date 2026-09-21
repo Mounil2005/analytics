@@ -116,7 +116,7 @@ jobs:
       # should not evict a browser download that is still correct.
       - name: Resolve the Playwright version
         id: playwright
-        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
 
       # Restore on every run, but only `main` writes the cache. A pull request
       # cannot then hand a later run a browser binary of its own choosing —

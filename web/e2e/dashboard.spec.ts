@@ -102,16 +102,19 @@ const smoke = test.extend<{ watched: Watch }>({
 smoke('boots and renders every macro tab the manifest lists', async ({ page }) => {
   await page.goto('/');
 
+  // The header renders in every state, loading included, so it says nothing about
+  // whether the manifest has arrived. The macro bar is what depends on it.
   await expect(page.getByRole('heading', { name: 'Hiero — analytics dashboard' })).toBeVisible();
 
   const macroBar = page.locator('nav.macrobar');
   const expected = expectedMacroTabs(MANIFEST);
-  expect(
-    await macroBar
-      .getByRole('button')
-      .allInnerTexts()
-      .then((names) => names.sort()),
-  ).toEqual(expected);
+  // Polled rather than read once: `allInnerTexts()` is a snapshot, so on a slow
+  // runner it would run before the manifest fetch settles, see an empty bar and
+  // fail a page that was simply not ready yet. Retrying until the bar matches
+  // (or the timeout says why it never did) keeps a slow boot from looking broken.
+  await expect
+    .poll(async () => (await macroBar.getByRole('button').allInnerTexts()).sort())
+    .toEqual(expected);
 
   for (const name of expected) {
     // Matched on the accessible name rather than a built regex: macro names
