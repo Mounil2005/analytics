@@ -2,7 +2,6 @@
  "id": "hip-evidence",
  "title": "Evidence (per PR)",
  "description": "The audit trail: every (HIP, PR) reference with where it matched and the matched text. Filter to a HIP and repository to independently verify a coverage cell. References whose only mention is a body phrase behind a distancing cue (\u201cwaiting on\u201d, \u201cprepares for\u201d, \u201cblocked by\u201d\u2026) are kept here but excluded from every count \u2014 the cue and the counted flag make each exclusion auditable.",
- "group": "Evidence",
  "source": "hip_pr_evidence.csv",
  "columns": [
   {
@@ -2172,6 +2171,20 @@
    "counted": true,
    "snippet": "docs: fix HIP-1261 design doc issues",
    "url": "https://github.com/hiero-ledger/sdk-collaboration-hub/pull/179"
+  },
+  {
+   "hip": 1261,
+   "hip_title": "Simple Fees",
+   "repo": "hiero-ledger/sdk-collaboration-hub",
+   "pr_number": 286,
+   "pr_title": "docs: add proposal for a shared HTTP transport layer",
+   "pr_state": "OPEN",
+   "pr_merged_at": null,
+   "match_sources": "body",
+   "qualifier": null,
+   "counted": true,
+   "snippet": "URL rewriting, mirror lag sleeps), the HIP-1261 aggregation formula, and the per-langua",
+   "url": "https://github.com/hiero-ledger/sdk-collaboration-hub/pull/286"
   },
   {
    "hip": 1261,
@@ -11876,8 +11889,9 @@
    "url": "https://github.com/hiero-ledger/hiero-sdk-python/pull/380"
   }
  ],
- "row_count": 844,
- "generated_at": "2026-09-16T14:07:06.295290+00:00",
+ "row_count": 845,
+ "generated_at": "2026-09-21T15:43:36.371656+00:00",
  "stale": false,
+ "group": "Evidence",
  "macro": "HIPs"
 }

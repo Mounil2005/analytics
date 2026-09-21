@@ -1,8 +1,7 @@
 {
  "id": "committeraffiliations",
  "title": "Committer affiliations \u2014 reference",
- "description": "The same reference as the maintainer table, for people whose highest role anywhere is committer \u2014 write access, but no maintainer seat in any repository. The two populations are disjoint, so nobody appears in both. Curation coverage is thinner here than for maintainers, so expect more 'unknown' rows; each one resolved makes the committer diversity chart sharper. To fix a mapping or resolve an unknown, edit its row in data/affiliations.yaml and append '# manual: reason', or use 'Suggest a correction' to open an issue on the analytics repo.",
- "group": "Organisation diversity",
+ "description": "The same reference as the Maintainers tab, for people whose highest role anywhere is committer \u2014 write access, but no maintainer seat in any repository. The two populations are disjoint, so nobody appears in both. Curation coverage is thinner here than for maintainers, so expect more 'unknown' rows; each one resolved makes the committer diversity chart sharper. To fix a mapping or resolve an unknown, edit its row in data/affiliations.yaml and append '# manual: reason', or use 'Suggest a correction' to open an issue on the analytics repo.",
  "source": "committer_affiliations.csv",
  "columns": [
   {
@@ -811,11 +810,14 @@
   }
  ],
  "row_count": 131,
+ "label": "Committers",
  "action": {
   "url": "https://github.com/hiero-hackers/analytics/issues",
   "label": "Suggest a correction"
  },
- "generated_at": "2026-09-16T14:05:44.690595+00:00",
+ "generated_at": "2026-09-21T15:42:00.715591+00:00",
  "stale": false,
- "macro": "Governance"
+ "group": "Organisation diversity",
+ "macro": "Governance",
+ "absorbed_by": "affiliations"
 }

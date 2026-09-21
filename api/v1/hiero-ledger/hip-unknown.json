@@ -2,7 +2,6 @@
  "id": "hip-unknown",
  "title": "Unknown HIP numbers (review)",
  "description": "References to numbers absent from the spec inventory \u2014 typically HIP numbers assigned to in-flight proposals whose spec file has not merged yet, legacy pre-migration numbers, or the occasional false positive. Kept for review instead of being counted.",
- "group": "Evidence",
  "source": "hip_unknown_references.csv",
  "columns": [
   {
@@ -38,8 +37,8 @@
    "hip": 1485,
    "repo": "hiero-ledger/hiero-mirror-node",
    "pr_number": 13654,
-   "pr_title": "Add new endpoint for debug_traceCall in web3",
-   "snippet": "coverage. The PR will be blocked until [HIP-1485](https://hips.hedera.com/#hip-1485) is"
+   "pr_title": "Add callTracer support for debug methods in web3",
+   "snippet": "s for reviewer**: This PR should await HIP-1485 initial confirmation. **Checklist**"
   },
   {
    "hip": 1485,
@@ -106,7 +105,8 @@
   }
  ],
  "row_count": 11,
- "generated_at": "2026-09-16T14:07:06.297027+00:00",
+ "generated_at": "2026-09-21T15:43:36.372570+00:00",
  "stale": false,
+ "group": "Evidence",
  "macro": "HIPs"
 }

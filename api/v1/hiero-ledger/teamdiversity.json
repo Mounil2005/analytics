@@ -2,7 +2,6 @@
  "id": "teamdiversity",
  "title": "Team organisation concentration",
  "description": "Per governance team: how many members resolve to an employer, how many distinct employers they span, the largest employer and its share, and the concentration (HHI, 10000 = one employer). 'single employer' = one employer holds every resolved seat \u2014 a capture / bus-factor risk, most serious for admin, release, security, and maintainer teams; teams with more unmapped than resolved members are never flagged. 'unknown' is how many members aren't in the affiliations map (mostly non-maintainers), so read a flag on a mostly-unknown team with caution. Most concentrated first.",
- "group": "Organisation diversity",
  "source": "team_affiliation_diversity.csv",
  "columns": [
   {
@@ -1333,7 +1332,8 @@
   }
  ],
  "row_count": 107,
- "generated_at": "2026-09-16T14:05:47.826186+00:00",
+ "generated_at": "2026-09-21T15:42:02.828689+00:00",
  "stale": false,
+ "group": "Organisation diversity",
  "macro": "Governance"
 }
