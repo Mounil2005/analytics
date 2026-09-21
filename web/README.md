@@ -65,8 +65,8 @@ tests.
 booting, base-relative URLs resolving against real files, and the page's
 Content-Security-Policy. `npm run test:e2e` builds the app, writes the same
 `fixtures.ts` tree to `.e2e-site/` as real files, serves it on localhost, and
-drives Chromium through it. Nothing leaves the machine: a request to anything
-other than the local server fails the run.
+drives Chromium through it. Nothing leaves the machine, and any request that
+tries to leave the local server fails the run.
 
 ```bash
 npx playwright install chromium   # once, to fetch the browser
@@ -76,9 +76,8 @@ npm run test:e2e
 The staging scripts are TypeScript that Node runs directly, so it needs Node
 22.18 or newer (CI uses 24). It runs in its own CI job, next to the Vitest one.
 
-The fixture manifest decides what gets served. If you add a section or view to
-it, add the matching API document to `ROUTES` in `fixtures.ts`, or staging stops
-and names the missing file. Chart images need no entry: staging writes a
-placeholder for each one the manifest lists. Nor do the companion CSVs a card
-offers for download. One listed in `ROUTES` is served as it is, and staging
-fills in a placeholder for the rest.
+The fixture manifest decides what gets served. If you add a section or view, add
+the matching API document to `ROUTES` in `fixtures.ts`; chart images are created
+as placeholders from the manifest, and staging names anything it cannot write.
+The companion CSVs a card offers for download are placeholders too, unless
+`ROUTES` lists a real one.
