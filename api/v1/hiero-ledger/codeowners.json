@@ -182,10 +182,18 @@
   {
    "repo": "solo",
    "status": true
+  },
+  {
+   "repo": "solo-charts",
+   "status": true
+  },
+  {
+   "repo": "solo-containers",
+   "status": true
   }
  ],
- "row_count": 42,
- "generated_at": "2026-09-21T15:42:24.575701+00:00",
+ "row_count": 44,
+ "generated_at": "2026-09-26T13:40:01.587560+00:00",
  "stale": false,
  "group": "Ownership",
  "macro": "Security & scorecards"
