@@ -371,18 +371,6 @@
    "organisations": "Hashgraph 1"
   },
   {
-   "team": "hiero-sdk-tck-maintainers",
-   "members": 2,
-   "resolved": 2,
-   "distinct_orgs": 1,
-   "top_org": "Hashgraph",
-   "top_org_pct": 100,
-   "hhi": 10000,
-   "unknown": 0,
-   "single_employer": true,
-   "organisations": "Hashgraph 2"
-  },
-  {
    "team": "tsc-eligibility-check-admins",
    "members": 2,
    "resolved": 2,
@@ -717,6 +705,18 @@
    "unknown": 1,
    "single_employer": false,
    "organisations": "DSR Corporation 2, Hashgraph 1"
+  },
+  {
+   "team": "hiero-sdk-tck-maintainers",
+   "members": 4,
+   "resolved": 3,
+   "distinct_orgs": 2,
+   "top_org": "Hashgraph",
+   "top_org_pct": 67,
+   "hhi": 5556,
+   "unknown": 1,
+   "single_employer": false,
+   "organisations": "Hashgraph 2, LimeChain 1"
   },
   {
    "team": "hiero-did-sdk-js-committers",
@@ -1380,7 +1380,7 @@
   }
  ],
  "row_count": 111,
- "generated_at": "2026-10-01T16:02:16.448359+00:00",
+ "generated_at": "2026-10-06T15:41:45.319217+00:00",
  "stale": false,
  "group": "Organisation diversity",
  "macro": "Governance"
