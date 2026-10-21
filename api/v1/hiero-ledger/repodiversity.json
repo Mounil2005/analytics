@@ -484,7 +484,7 @@
  ],
  "row_count": 44,
  "label": "Maintainers",
- "generated_at": "2026-10-20T05:47:32.337925+00:00",
+ "generated_at": "2026-10-21T05:52:18.934455+00:00",
  "stale": false,
  "group": "Organisation diversity",
  "variants": [
@@ -974,7 +974,7 @@
    ],
    "row_count": 44,
    "label": "Maintainers",
-   "generated_at": "2026-10-20T05:47:32.337925+00:00",
+   "generated_at": "2026-10-21T05:52:18.934455+00:00",
    "stale": false
   },
   {
@@ -1303,7 +1303,7 @@
    ],
    "row_count": 28,
    "label": "Committers",
-   "generated_at": "2026-10-20T05:47:32.366539+00:00",
+   "generated_at": "2026-10-21T05:52:18.980147+00:00",
    "stale": false
   }
  ],
