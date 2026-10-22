@@ -28,7 +28,7 @@
  "window": {
   "kind": "trailing",
   "days": 365,
-  "end": "2026-10-21T05:47:59.270676+00:00"
+  "end": "2026-10-22T05:50:48.763326+00:00"
  },
  "series": [
   {
@@ -85,7 +85,7 @@
   },
   {
    "repo": "hiero-block-node",
-   "Unknown": 581,
+   "Unknown": 588,
    "Good First Issue": 0,
    "Beginner": 0,
    "Intermediate": 0,
@@ -101,7 +101,7 @@
   },
   {
    "repo": "hiero-consensus-node",
-   "Unknown": 943,
+   "Unknown": 956,
    "Good First Issue": 1,
    "Beginner": 0,
    "Intermediate": 0,
@@ -189,7 +189,7 @@
   },
   {
    "repo": "hiero-mirror-node",
-   "Unknown": 158,
+   "Unknown": 159,
    "Good First Issue": 3,
    "Beginner": 0,
    "Intermediate": 0,
@@ -301,7 +301,7 @@
   },
   {
    "repo": "solo",
-   "Unknown": 387,
+   "Unknown": 389,
    "Good First Issue": 3,
    "Beginner": 0,
    "Intermediate": 0,
@@ -348,6 +348,6 @@
    "Advanced": 0
   }
  ],
- "generated_at": "2026-10-21T05:47:59.270676+00:00",
+ "generated_at": "2026-10-22T05:50:48.763326+00:00",
  "stale": false
 }

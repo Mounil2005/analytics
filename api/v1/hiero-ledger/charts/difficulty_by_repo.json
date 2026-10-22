@@ -35,7 +35,7 @@
  "window": {
   "kind": "all",
   "days": null,
-  "end": "2026-10-21T05:47:59.222157+00:00"
+  "end": "2026-10-22T05:50:48.716128+00:00"
  },
  "series": [
   {
@@ -108,7 +108,7 @@
   },
   {
    "repo": "hiero-block-node",
-   "Unknown": 758,
+   "Unknown": 765,
    "Good First Issue": 0,
    "Beginner": 0,
    "Intermediate": 0,
@@ -124,7 +124,7 @@
   },
   {
    "repo": "hiero-consensus-node",
-   "Unknown": 1811,
+   "Unknown": 1827,
    "Good First Issue": 3,
    "Beginner": 0,
    "Intermediate": 0,
@@ -220,7 +220,7 @@
   },
   {
    "repo": "hiero-mirror-node",
-   "Unknown": 311,
+   "Unknown": 312,
    "Good First Issue": 5,
    "Beginner": 0,
    "Intermediate": 0,
@@ -332,7 +332,7 @@
   },
   {
    "repo": "solo",
-   "Unknown": 509,
+   "Unknown": 511,
    "Good First Issue": 3,
    "Beginner": 0,
    "Intermediate": 0,
@@ -379,6 +379,6 @@
    "Advanced": 0
   }
  ],
- "generated_at": "2026-10-21T05:47:59.222157+00:00",
+ "generated_at": "2026-10-22T05:50:48.716128+00:00",
  "stale": false
 }
